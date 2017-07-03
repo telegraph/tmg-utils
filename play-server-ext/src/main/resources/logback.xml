@@ -1,0 +1,63 @@
+<configuration>
+
+    <conversionRule conversionWord="coloredLevel"
+                    converterClass="play.api.libs.logback.ColoredLevel" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <level>logLevel</level>
+                <levelValue>[ignore]</levelValue>
+                <version>[ignore]</version>
+                <logger>loggerName</logger>
+                <thread>threadName</thread>
+                <callerClass>callerClass</callerClass>
+                <callerMethod>callerMethod</callerMethod>
+                <callerFile>callerFile</callerFile>
+                <callerLine>callerLine</callerLine>
+                <stackTrace>stacktrace</stackTrace>
+            </fieldNames>
+            <includeCallerInfo>true</includeCallerInfo>
+            <includeContext>true</includeContext>
+        </encoder>
+    </appender>
+
+    <appender name="ACCESS_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${user.dir}/app-server.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover with compression -->
+            <fileNamePattern>access-log-%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <!-- keep 1 week worth of history -->
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <level>logLevel</level>
+                <levelValue>[ignore]</levelValue>
+                <version>[ignore]</version>
+                <logger>loggerName</logger>
+                <thread>threadName</thread>
+                <callerClass>callerClass</callerClass>
+                <callerMethod>callerMethod</callerMethod>
+                <callerFile>callerFile</callerFile>
+                <callerLine>callerLine</callerLine>
+                <stackTrace>stacktrace</stackTrace>
+            </fieldNames>
+            <includeCallerInfo>true</includeCallerInfo>
+            <includeContext>true</includeContext>
+            <!-- this quadruples logging throughput -->
+            <immediateFlush>false</immediateFlush>
+        </encoder>
+    </appender>
+
+    <!-- additivity=false ensures access log data only goes to the access log -->
+    <logger name="access" level="INFO" additivity="false">
+        <appender-ref ref="ACCESS_FILE" />
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
