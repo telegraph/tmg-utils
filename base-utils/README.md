@@ -7,6 +7,7 @@ In this sub-project we have:
  * **Settings** abstraction that allow us to define in a standard way Server/Client/Repository settings.
   
 ##Clock
+
 This object wraps time operations in order to make it more easy to UnitTest. 
 
 In the next example, the *Product* depends heavily on the current time making it more hard to test.
@@ -66,7 +67,7 @@ object RepoProductSpec{
 }
 ```
 
-### Clock.now*
+### Clock.now
 Returns a LocalDateTime instance.
 
 ### Clock.nowWithZone
