@@ -62,5 +62,5 @@ private [utils] class ConfigExtensions(left:Config){
 }
 
 object ConfigExtensions{
-  val EmptyConfig = ConfigFactory.empty()
+  val EmptyConfig: Config = ConfigFactory.empty()
 }
