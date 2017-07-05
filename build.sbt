@@ -2,7 +2,7 @@ import Dependencies._
 import sbt.Keys._
 
 lazy val tmgUtils = (project in file("."))
-    .aggregate(genericClient, httpClient, playServerExt, akkaServerExt)
+    .aggregate(baseUtils, genericClient, httpClient, playServerExt, akkaServerExt)
 
 lazy val genericClient  = (project in file("generic-client"))
   .settings(
