@@ -5,10 +5,11 @@ lazy val tmgUtils = (project in file("."))
     .aggregate(genericClient, httpClient, playServerExt, akkaServerExt)
 
 lazy val genericClient  = (project in file("generic-client"))
-    .settings(
-      name := "generic-client",
-      GenericClient
-    )
+  .settings(
+    name := "generic-client",
+    GenericClient
+  )
+  .dependsOn(baseUtils)
 
 lazy val httpClient = (project in file("http-client"))
   .settings(
@@ -30,3 +31,9 @@ lazy val playServerExt = (project in file("play-server-ext"))
     PlayServerExt
   )
   .dependsOn(genericClient)
+
+lazy val baseUtils = (project in file("base-utils"))
+  .settings(
+    name := "base-utils",
+    BaseUtils
+  )

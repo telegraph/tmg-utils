@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 import akka.actor.ActorSystem
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{Config, ConfigFactory}
 import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
 import MonitorITest._
@@ -72,12 +72,12 @@ class MonitorITest
 
 object MonitorITest {
 
-  val DefaultTimeout = 5 seconds
-  val ConfigTest = ConfigFactory.load("application-tst.conf")
-  val MockClient      = mock(classOf[GenericClient])
+  val DefaultTimeout: FiniteDuration = 5 seconds
+  val ConfigTest    : Config         = ConfigFactory.load("application-tst.conf")
+  val MockClient    : GenericClient  = mock(classOf[GenericClient])
 
-  val SampleDateTime1         = ZonedDateTime.now()
-  val SampleConnectedMessage1 = ClientDetails(
+  val SampleDateTime1        : ZonedDateTime = ZonedDateTime.now()
+  val SampleConnectedMessage1: ClientDetails = ClientDetails(
     name            = "sample-1",
     status          = 200,
     `date-time`     = SampleDateTime1.toEpochSecond,

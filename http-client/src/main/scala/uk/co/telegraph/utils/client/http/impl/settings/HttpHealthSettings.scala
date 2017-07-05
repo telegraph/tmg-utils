@@ -1,7 +1,9 @@
 package uk.co.telegraph.utils.client.http.impl.settings
 
-import akka.http.scaladsl.model.HttpMethod
+import akka.http.scaladsl.model.HttpMethods.HEAD
+import akka.http.scaladsl.model.{HttpMethod, HttpMethods}
 import com.typesafe.config.Config
+import uk.co.telegraph.utils._
 
 abstract class HttpHealthSettings {
   def method: HttpMethod
@@ -20,8 +22,8 @@ object HttpHealthSettings extends Settings[HttpHealthSettings]("tmg.http.client.
     val conf:Config = inner.withFallback(root getConfig prefix )
 
     HttpHealthSettingsImpl(
-      method = conf getHttpMethod "method",
-      path   = conf getString     "path"
+      method = conf getOptionString "method" flatMap{ x => HttpMethods.getForKey(x.toUpperCase) } getOrElse HEAD,
+      path   = conf getString       "path"
     )
   }
 }

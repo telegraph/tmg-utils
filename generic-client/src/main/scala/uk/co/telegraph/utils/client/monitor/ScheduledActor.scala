@@ -1,29 +1,19 @@
 package uk.co.telegraph.utils.client.monitor
 
-import akka.actor.{Actor, ActorLogging}
-import com.typesafe.config.Config
+import akka.actor.{Actor, ActorLogging, Cancellable}
+import uk.co.telegraph.utils.client.monitor.settings.MonitorSettings
 
 import scala.language.postfixOps
-import uk.co.telegraph.utils.client._
-
-import scala.concurrent.duration.FiniteDuration
 
 trait ScheduledActor extends ActorLogging { this: Actor =>
 
   import context.dispatcher
 
-  /**
-    * Endpoint configuration
-    */
-  val endpointConfig:Config
+  val settings:MonitorSettings
 
-  lazy val delay:FiniteDuration     = endpointConfig.getDuration("delay")
-  lazy val interval:FiniteDuration  = endpointConfig.getDuration("interval")
-  lazy val scheduler = context.system.scheduler.schedule(delay, interval, self, onTick())
+  lazy val scheduler: Cancellable = context.system.scheduler.schedule(settings.delay, settings.interval, self, onTick())
 
-  /**
-    * Start Scheduler
-    */
+  // Create the scheduler
   override def preStart(): Unit = {
     scheduler
   }

@@ -5,6 +5,7 @@ import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.{Config, ConfigFactory}
 import org.scalatest._
 import uk.co.telegraph.utils.client.monitor.ScheduledActorTest._
+import uk.co.telegraph.utils.client.monitor.settings.MonitorSettings
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -36,18 +37,18 @@ class ScheduledActorTest extends TestKit(ActorSystemTest)
 
 object ScheduledActorTest{
 
-  val ActorSystemTest = ActorSystem("monitoring-test")
+  val Config: Config = ConfigFactory.parseString(
+    """app.monitoring {
+      | delay         : 0 seconds
+      | interval      : 2 seconds
+      | client-timeout: 5 seconds
+      |}
+    """.stripMargin)
+  implicit val ActorSystemTest = ActorSystem("monitoring-test", Config)
 
   class SchedulerTest(prob:ActorRef) extends Actor with ScheduledActor{
-    override val endpointConfig: Config = ConfigFactory.parseString(
-      """
-        |delay    : 0 seconds
-        |interval : 2 seconds
-      """.stripMargin)
-
-    override protected def onTick(): AnyRef = {
-      Tick
-    }
+    override val settings: MonitorSettings = MonitorSettings()
+    override protected def onTick(): AnyRef = Tick
 
     override def receive: Receive = {
       case Tick =>

@@ -4,14 +4,12 @@ import akka.actor.{Actor, ActorLogging, OneForOneStrategy, Props, SupervisorStra
 import akka.pattern.pipe
 import uk.co.telegraph.utils.client.GenericClient
 import uk.co.telegraph.utils.client.models.{ClientDetails, MonitorDto}
-import MonitorActor._
+import uk.co.telegraph.utils.client.monitor.MonitorActor._
+import uk.co.telegraph.utils.client.monitor.settings.MonitorSettings
 
 import scala.concurrent.Future
 import scala.concurrent.Future._
-import scala.concurrent.duration.{Duration, FiniteDuration}
-import java.time.{Duration => JDuration}
-
-import scala.concurrent.duration.Duration.fromNanos
+import scala.concurrent.duration.FiniteDuration
 import scala.language.implicitConversions
 
 private [monitor] trait MonitorActor
@@ -20,11 +18,11 @@ private [monitor] trait MonitorActor
 {
   import context.dispatcher
 
-  implicit val timeout:FiniteDuration
-
+  val settings:MonitorSettings
   val clients:Seq[GenericClient]
 
-  lazy val receive        = monitor()
+  implicit lazy val timeout:FiniteDuration = settings.clientTimeout
+  lazy val receive: Receive = monitor()
 
   private def monitor(implicit cachedDetails:Seq[ClientDetails] = Seq.empty): Receive ={
     case Refresh =>
@@ -74,18 +72,13 @@ object MonitorActor{
   private [monitor] object Refresh extends MonitorMsg
   private [monitor] case class GetData(freshData:Boolean = false  ) extends MonitorMsg
 
-  implicit private def toFinitDuration(jd:JDuration):FiniteDuration =
-    fromNanos(jd.toNanos)
-
   private case class MonitorActorImpl(clients:Seq[GenericClient]) extends MonitorActor with ScheduledActor{
+    import context.system
 
-    val endpointConfig = context.system.settings.config.getConfig(ConfigPath)
+    lazy val settings:MonitorSettings = MonitorSettings()
 
-    implicit val timeout:FiniteDuration = endpointConfig.getDuration("client-timeout")
-
-    override protected def onTick(): AnyRef = {
+    override protected def onTick(): AnyRef =
       Refresh
-    }
   }
 
   def props(clients:Seq[GenericClient]):Props = Props(classOf[MonitorActorImpl], clients)

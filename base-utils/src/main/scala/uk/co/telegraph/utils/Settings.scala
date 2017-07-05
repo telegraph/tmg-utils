@@ -1,9 +1,11 @@
-package uk.co.telegraph.utils.client.http.impl.settings
+package uk.co.telegraph.utils
 
 import akka.actor.ActorSystem
 import com.typesafe.config.Config
 
-private [settings] abstract class Settings[T](protected val prefix:String){
+abstract class Settings[T](protected val prefix:String){
+
+  def apply()(implicit system:ActorSystem):T = apply(system.settings.config)
 
   def apply(inner:Config)(implicit system:ActorSystem):T = apply(system.settings.config, inner)
 

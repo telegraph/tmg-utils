@@ -8,6 +8,7 @@ import akka.http.scaladsl.settings.ConnectionPoolSettings
 import com.typesafe.config.Config
 
 import scala.language.{implicitConversions, postfixOps}
+import uk.co.telegraph.utils._
 
 sealed abstract class HttpSettings {
   def port          : Int

@@ -7,6 +7,7 @@ import scala.concurrent.Future.{failed, successful}
 import akka.actor.{ActorSystem, OneForOneStrategy, Props}
 import akka.event.LoggingAdapter
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
+import com.typesafe.config.{Config, ConfigFactory}
 import org.mockito.ArgumentMatchers.{eq => mkEq}
 import org.mockito.Mockito._
 import org.scalatest.{mock => _, _}
@@ -14,6 +15,7 @@ import uk.co.telegraph.utils.client.GenericClient
 import uk.co.telegraph.utils.client.models.{ClientDetails, MonitorDto}
 import uk.co.telegraph.utils.client.monitor.MonitorActor.{GetData, Refresh}
 import uk.co.telegraph.utils.client.monitor.MonitorActorTest._
+import uk.co.telegraph.utils.client.monitor.settings.MonitorSettings
 
 import scala.concurrent.duration.{FiniteDuration, _}
 import scala.language.postfixOps
@@ -26,8 +28,6 @@ class MonitorActorTest extends TestKit(ActorSystemTest)
   with BeforeAndAfterAll
   with OneInstancePerTest
 {
-
-
 
   before{
     reset(MockClient)
@@ -145,9 +145,17 @@ class MonitorActorTest extends TestKit(ActorSystemTest)
 
 object MonitorActorTest{
   val DefaultTimeout:FiniteDuration = 5 second
-  val ActorSystemTest = ActorSystem("monitoring-test")
+  val Config: Config = ConfigFactory.parseString(
+    """app.monitoring {
+      | delay         : 0 seconds
+      | interval      : 2 seconds
+      | client-timeout: 5 seconds
+      |}
+    """.stripMargin)
 
-  val SampleDateTime1         = ZonedDateTime.now()
+  implicit val ActorSystemTest = ActorSystem("monitoring-test", Config)
+
+  val SampleDateTime1: ZonedDateTime = ZonedDateTime.now()
   val SampleConnectedMessage1 = ClientDetails(
     name            = "sample-1",
     status          = 200,
@@ -156,7 +164,7 @@ object MonitorActorTest{
     configs         = Map.empty,
     command         = "test"
   )
-  val SampleDateTime2         = ZonedDateTime.now()
+  val SampleDateTime2: ZonedDateTime = ZonedDateTime.now()
   val SampleConnectedMessage2 = ClientDetails(
     name            = "sample-2",
     status          = 200,
@@ -165,12 +173,12 @@ object MonitorActorTest{
     configs         = Map.empty,
     command         = "test"
   )
-  val MockClient = mock(classOf[GenericClient])
-  val MockLogging = mock(classOf[LoggingAdapter])
+  val MockClient: GenericClient = mock(classOf[GenericClient])
+  val MockLogging: LoggingAdapter = mock(classOf[LoggingAdapter])
 
   class MonitorActorMock extends MonitorActor{
+    override lazy val settings: MonitorSettings = MonitorSettings()
     override def log: LoggingAdapter = MockLogging
     override val clients = Seq(MockClient)
-    implicit val timeout = DefaultTimeout
   }
 }

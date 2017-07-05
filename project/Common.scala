@@ -35,13 +35,8 @@ object Common extends AutoPlugin {
     coverageFailOnMinimum     := false,
     coverageHighlighting      := true,
     autoAPIMappings           := true,
-    // show full stack traces and test case durations
-    testOptions in Test       += Tests.Argument("-oDF"),
-    // -v Log "test run started" / "test started" / "test run finished" events on log level "info" instead of "debug".
-    // -a Show stack traces and exception class name for AssertionErrors.
-    testOptions               += Tests.Argument(TestFrameworks.JUnit, "-v", "-a"),
 
-    publishMavenStyle         := false,
+    publishMavenStyle         := true,
     publishTo                 := {
       if( isSnapshot.value ){
         Some("mvn-artifacts" atS3 "s3://mvn-artifacts/snapshot")
