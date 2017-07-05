@@ -6,7 +6,7 @@ In this sub-project we have:
  * **ConfigExtensions** extends the operations around [Config](https://github.com/typesafehub/config);
  * **Settings** abstraction that allow us to define in a standard way Server/Client/Repository settings.
   
-**Clock**
+##Clock
 This object wraps time operations in order to make it more easy to UnitTest. 
 
 In the next example, the *Product* depends heavily on the current time making it more hard to test.
@@ -66,31 +66,31 @@ object RepoProductSpec{
 }
 ```
 
-***Clock.now***
+### Clock.now*
 Returns a LocalDateTime instance.
 
-***Clock.nowWithZone***
+### Clock.nowWithZone
 Returns a ZonedDateTime instance.
 
-**ConfigExtensions**
+## ConfigExtensions
 This wrapper allow us to extend Config functionalities.
   
-***ConfigExtensions.getFiniteDuration***
+### ConfigExtensions.getFiniteDuration
 Gets a FiniteDuration from *config* by mapping the *Java Duration* into *Scala Duration*.
 
-***ConfigExtensions.getMap***
+### ConfigExtensions.getMap
 Gets a value as Map[String, String]. Throws an exception if it does not exist
 
-***ConfigExtensions.tryGetConfig***
+### ConfigExtensions.tryGetConfig
 Try to get a value as Config. If no configuration is found, returns an empty one.
 
-***ConfigExtensions.getOptionString***
+### ConfigExtensions.getOptionString
 Gets a value as Option[String]. If no value is found, returns None.
 
-***ConfigExtensions.getUrl***
+### ConfigExtensions.getUrl
 Gets a value as an Url object.
 
-***ConfigExtensions.prefixKeysWith***
+### ConfigExtensions.prefixKeysWith
 This operation applied a prefix to all Config Keys.
 
 #On Going
