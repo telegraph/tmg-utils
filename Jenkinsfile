@@ -1,6 +1,6 @@
 
 ansiColor('xterm') {
-node {
+node("master"){
     
     def sbtFolder        = "${tool name: 'sbt-0.13.13', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'}/bin"
     def projectName      = "${env.PROJECT_NAME}"
