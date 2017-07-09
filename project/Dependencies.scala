@@ -17,7 +17,8 @@ object Dependencies {
       "com.typesafe.akka" %% "akka-actor"                  % AkkaVersion,
       "com.typesafe.akka" %% "akka-testkit"                % AkkaVersion     % Test,
       "org.scalatest"     %% "scalatest"                   % "3.0.3"         % Test,
-      "org.mockito"       %  "mockito-core"                % "2.7.9"         % Test
+      "org.mockito"       %  "mockito-core"                % "2.7.9"         % Test,
+      "org.scalamock"     %% "scalamock-scalatest-support" % "3.6.0"
     ),
     dependencyOverrides ++= Set(
       "com.typesafe"      %  "config"                      % "1.3.1"
@@ -95,7 +96,6 @@ object Dependencies {
 
   lazy val BaseUtils:Seq[Setting[_]] = Seq(
     libraryDependencies ++= Seq(
-      "org.scalamock"                %% "scalamock-scalatest-support" % "3.6.0"       % Test
     )
   ) ++ Common
 }
