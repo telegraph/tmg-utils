@@ -1,19 +1,13 @@
 package uk.co.telegraph
 
-import com.typesafe.config.Config
+import uk.co.telegraph.utils.config.ConfigExtensions
 
 import scala.language.implicitConversions
 
-package object utils {
+package object utils extends ConfigExtensions{
 
   /**
     * Default System Clock
     */
   implicit val DefaultSystemClock = Clock
-
-  /**
-    * Implicitly converts a Config into ConfigExtension object.
-    */
-  implicit def toConfigExtensions(left:Config):ConfigExtensions =
-    new ConfigExtensions(left)
 }

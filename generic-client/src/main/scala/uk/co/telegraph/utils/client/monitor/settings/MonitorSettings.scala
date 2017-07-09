@@ -11,7 +11,6 @@ abstract class MonitorSettings {
   def clientTimeout: FiniteDuration
 }
 
-
 object MonitorSettings extends Settings[MonitorSettings]("app.monitoring"){
 
   private case class MonitorSettingsImpl
@@ -25,9 +24,9 @@ object MonitorSettings extends Settings[MonitorSettings]("app.monitoring"){
     val conf:Config = inner.withFallback(root getConfig prefix)
 
     MonitorSettingsImpl(
-      delay         = conf getFiniteDuration "delay",
-      interval      = conf getFiniteDuration "interval",
-      clientTimeout = conf getFiniteDuration "client-timeout"
+      delay         = conf get[FiniteDuration] "delay",
+      interval      = conf get[FiniteDuration] "interval",
+      clientTimeout = conf get[FiniteDuration] "client-timeout"
     )
   }
 }

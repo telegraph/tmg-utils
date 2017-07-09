@@ -6,7 +6,6 @@ object Dependencies {
   val AkkaVersion     = "2.5.3"
   val AkkaHttpVersion = "10.0.9"
   val Json4sVersion   = "3.5.2"
-  val AwsSdkVersion   = "1.11.123"
   val PlayVersion     = "2.6.0"
   val LogBackVersion  = "1.2.3"
   val JacksonVersion  = "2.7.8"
@@ -96,7 +95,7 @@ object Dependencies {
 
   lazy val BaseUtils:Seq[Setting[_]] = Seq(
     libraryDependencies ++= Seq(
-
+      "org.scalamock"                %% "scalamock-scalatest-support" % "3.6.0"       % Test
     )
   ) ++ Common
 }

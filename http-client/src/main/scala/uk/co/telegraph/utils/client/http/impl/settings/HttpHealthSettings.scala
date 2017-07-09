@@ -22,8 +22,8 @@ object HttpHealthSettings extends Settings[HttpHealthSettings]("tmg.http.client.
     val conf:Config = inner.withFallback(root getConfig prefix )
 
     HttpHealthSettingsImpl(
-      method = conf getOptionString "method" flatMap{ x => HttpMethods.getForKey(x.toUpperCase) } getOrElse HEAD,
-      path   = conf getString       "path"
+      method = conf.getOption[String]("method").flatMap{ x => HttpMethods.getForKey(x.toUpperCase) } getOrElse HEAD,
+      path   = conf.get[String]("path")
     )
   }
 }
