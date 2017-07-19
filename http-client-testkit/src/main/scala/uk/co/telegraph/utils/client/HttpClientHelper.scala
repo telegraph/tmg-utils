@@ -6,6 +6,7 @@ import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
 import com.typesafe.config.Config
+import org.scalamock.matchers.ArgThat
 import org.scalamock.scalatest.MockFactory
 import uk.co.telegraph.utils.client.http.impl.HttpClient
 import uk.co.telegraph.utils.client.http.impl.settings.HttpSettings
@@ -25,11 +26,19 @@ trait HttpClientHelper { this:MockFactory =>
     lazy val settings = HttpSettings(endpointConfig)
 
 
-    override lazy val httpClientFlow: Flow[HttpRequest, HttpContext, NotUsed] = Flow[HttpRequest].map(x =>{
-      val resp = HttpConnectorMock.doRequest(x)
-      assert( x != null, "Should not be null" )
-      assert( resp != null, "Should not be null" )
-      HttpContext(x, resp)
+    override lazy val httpClientFlow: Flow[HttpRequest, HttpContext, NotUsed] = Flow[HttpRequest].map( httpRequest => {
+      val httpResponse = HttpConnectorMock.doRequest(httpRequest)
+      require(httpResponse != null, s"It was not possible to find a mocked request for $httpRequest")
+      HttpContext(httpRequest, httpResponse)
+    })
+  }
+
+  def withRequestMatching(expectedRequest:HttpRequest): ArgThat[HttpRequest] = {
+    argThat[HttpRequest]( actual => {
+      require( actual == expectedRequest, s"Request sent did not match expected:" +
+        s"\nExpected: $expectedRequest" +
+        s"\nActual  : $actual" )
+      true
     })
   }
 }
