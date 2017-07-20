@@ -49,7 +49,7 @@ trait HttpClient extends GenericClient {
   /**
     * Set the Connector type
     */
-  protected lazy val httpConnectorFlow:HttpConnector = {
+  lazy val httpConnectorFlow:HttpConnector = {
     if (settings.isSecure)
       Http().cachedHostConnectionPoolHttps(
         host     = settings.host,
@@ -73,9 +73,7 @@ trait HttpClient extends GenericClient {
     * Basic HttpRequest -> HttpResponse Flow
     */
   lazy val httpClientFlow:Flow[HttpRequest, HttpContext, NotUsed] = Flow[HttpRequest]
-    .map( r => logRequest(logging, logLevel){
-      r.withHeaders(defaultHeaders)
-    })
+    .map( logRequest(logging, logLevel) )
     .map( x => (x, x))
     .via( httpConnectorFlow )
     .flatMapConcat({
