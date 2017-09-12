@@ -79,7 +79,7 @@ object Dependencies {
       "ch.qos.logback"               %  "logback-core"              % LogBackVersion,
       "ch.qos.logback"               %  "logback-classic"           % LogBackVersion,
       "net.logstash.logback"         %  "logstash-logback-encoder"  % "4.11",
-      "io.swagger"                   %% "swagger-play2"             % "1.6.0-UPDATE-ME",
+      "io.swagger"                   %% "swagger-play2"             % "1.6.0",
 
       // Play Utilities
       "com.typesafe.play"            %% "filters-helpers"           % PlayVersion,
