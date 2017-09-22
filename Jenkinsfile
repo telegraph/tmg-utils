@@ -36,6 +36,13 @@ node("master"){
         """
     }
 
+    stage("Coverage"){
+        sh """
+            export CODACY_PROJECT_TOKEN=9c9bc8231fd34d17952615b7bfdbd8a0
+            ${sbtFolder}/sbt codacyCoverage
+        """
+    }
+
     stage("Publish"){
         sh """
             ${sbtFolder}/sbt publish
