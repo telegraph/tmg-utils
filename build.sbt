@@ -6,6 +6,7 @@ lazy val tmgUtils = (project in file("."))
 
 lazy val genericClient  = (project in file("generic-client"))
   .settings(
+    coverageHighlighting := false,
     name := "generic-client",
     GenericClient
   )
