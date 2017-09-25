@@ -30,15 +30,12 @@ node("master"){
         ]
     }
 
-    stage("Build & Test"){
-        sh """
-            ${sbtFolder}/sbt clean test coverage coverageReport coverageAggregate
-        """
-    }
-
-    stage("Coverage"){
+    stage("Build & Test & Coverage"){
         sh """
             export CODACY_PROJECT_TOKEN=9c9bc8231fd34d17952615b7bfdbd8a0
+            ${sbtFolder}/sbt clean coverage test
+            ${sbtFolder}/sbt coverageReport
+            ${sbtFolder}/sbt coverageAggregate
             ${sbtFolder}/sbt codacyCoverage
         """
     }
