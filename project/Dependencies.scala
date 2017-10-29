@@ -3,50 +3,69 @@ import Keys._
 
 object Dependencies {
 
-  val AkkaVersion     = "2.5.3"
-  val AkkaHttpVersion = "10.0.9"
-  val Json4sVersion   = "3.5.2"
-  val PlayVersion     = "2.6.0"
-  val LogBackVersion  = "1.2.3"
-  val JacksonVersion  = "2.7.8"
-  val GuiceVersion    = "4.1.0"
+  val TypeSafeConfigVersion = "1.3.1"
+  val AkkaVersion           = "2.5.6"
+  val AkkaHttpVersion       = "10.0.9"
+  val Json4sVersion         = "3.5.3"
+  val PlayVersion           = "2.6.6"
+  val LogBackVersion        = "1.2.3"
+  val GuiceVersion          = "4.1.0"
+  val ScalaTestVersion      = "3.0.4"
+  val ScalaMockVersion      = "3.6.0"
+  val WireMockVersion       = "2.10.1"
 
   val Common: Seq[Setting[_]] = Seq(
     libraryDependencies ++= Seq(
-      "com.typesafe"      %  "config"                      % "1.3.1",
+      "com.typesafe"      %  "config"                      % TypeSafeConfigVersion,
       "com.typesafe.akka" %% "akka-actor"                  % AkkaVersion,
-      "com.typesafe.akka" %% "akka-testkit"                % AkkaVersion     % Test,
-      "org.scalatest"     %% "scalatest"                   % "3.0.3"         % Test,
-      "org.mockito"       %  "mockito-core"                % "2.7.9"         % Test,
-      "org.scalamock"     %% "scalamock-scalatest-support" % "3.6.0"
+
+      "com.typesafe.akka" %% "akka-testkit"                % AkkaVersion      % Test,
+      "org.scalatest"     %% "scalatest"                   % ScalaTestVersion % Test,
+      "org.mockito"       %  "mockito-core"                % "2.7.9"          % Test,
+      "org.scalamock"     %% "scalamock-scalatest-support" % "3.6.0"          % Test
     ),
     dependencyOverrides ++= Set(
-      "com.typesafe"      %  "config"                      % "1.3.1"
+      "com.typesafe"      %  "config"                      % TypeSafeConfigVersion
+    )
+  )
+
+  lazy val HttpClientTestKit: Seq[Setting[_]] = Seq(
+    libraryDependencies ++= Seq(
+      "org.scalatest"          %% "scalatest"                   % ScalaTestVersion,
+      "org.scalamock"          %% "scalamock-scalatest-support" % "3.6.0"
     )
   )
 
   lazy val HttpClient: Seq[Setting[_]] = Seq(
     libraryDependencies ++= Seq(
-      // Json4s
-      "org.json4s"             %% "json4s-jackson"      % Json4sVersion,
-      "org.json4s"             %% "json4s-core"         % Json4sVersion,
-      "org.json4s"             %% "json4s-ext"          % Json4sVersion,
+      "com.typesafe"      %  "config"                           % TypeSafeConfigVersion,
 
-      "com.typesafe.akka"      %% "akka-http"           % AkkaHttpVersion,
-      "com.typesafe.akka"      %% "akka-http-testkit"   % AkkaHttpVersion % Test,
-      "com.typesafe.akka"      %% "akka-stream-testkit" % AkkaVersion     % Test,
-      "com.github.tomakehurst" %  "wiremock"            % "2.6.0"         % Test
+      // Json4s
+      "org.json4s"             %% "json4s-jackson"              % Json4sVersion,
+      "org.json4s"             %% "json4s-core"                 % Json4sVersion,
+      "com.typesafe.akka"      %% "akka-actor"                  % AkkaVersion,
+      "com.typesafe.akka"      %% "akka-stream"                 % AkkaVersion,
+      "com.typesafe.akka"      %% "akka-http"                   % AkkaHttpVersion,
+
+      "com.github.tomakehurst" %  "wiremock"                    % WireMockVersion  % Test,
+      "org.scalatest"          %% "scalatest"                   % ScalaTestVersion % Test,
+      "org.scalamock"          %% "scalamock-scalatest-support" % "3.6.0"          % Test
     ),
     dependencyOverrides ++= Set(
       "com.typesafe.akka" %% "akka-stream"         % AkkaVersion,
       "com.typesafe.akka" %% "akka-actor"          % AkkaVersion
     )
-  ) ++ Common
+  )
 
   val GenericClient: Seq[Setting[_]] = Seq(
     libraryDependencies ++= Seq(
+      "com.typesafe"      %  "config"                      % TypeSafeConfigVersion,
+      "com.typesafe.akka" %% "akka-actor"                  % AkkaVersion,
+      "com.typesafe.akka" %% "akka-testkit"                % AkkaVersion      % Test,
+      "org.scalatest"     %% "scalatest"                   % ScalaTestVersion % Test,
+      "org.scalamock"     %% "scalamock-scalatest-support" % ScalaMockVersion % Test
     )
-  ) ++ Common
+  )
 
   val AkkaServerExt: Seq[Setting[_]] = Seq(
     libraryDependencies ++= Seq(
@@ -96,6 +115,9 @@ object Dependencies {
 
   lazy val BaseUtils:Seq[Setting[_]] = Seq(
     libraryDependencies ++= Seq(
+      "com.typesafe"      %  "config"                      % TypeSafeConfigVersion,
+      "org.scalatest"     %% "scalatest"                   % ScalaTestVersion % Test,
+      "org.scalamock"     %% "scalamock-scalatest-support" % ScalaMockVersion % Test
     )
-  ) ++ Common
+  )
 }

@@ -5,35 +5,31 @@ import java.time.format.DateTimeFormatter
 
 import akka.actor.ActorSystem
 import com.typesafe.config.{Config, ConfigFactory}
+import org.scalamock.scalatest.MockFactory
 import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
-import MonitorITest._
-import org.mockito.ArgumentMatchers.{eq => mkEq}
-import org.mockito.Mockito.{mock, reset, when}
 import org.scalatest.time.{Millis, Seconds, Span}
 import uk.co.telegraph.utils.client.GenericClient
 import uk.co.telegraph.utils.client.models.ClientDetails
+import uk.co.telegraph.utils.client.monitor.MonitorISpec._
 
 import scala.concurrent.Future.{failed, successful}
-import scala.language.postfixOps
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
-class MonitorITest
+class MonitorISpec
   extends FreeSpecLike
   with Matchers
   with BeforeAndAfter
   with BeforeAndAfterAll
   with OneInstancePerTest
   with ScalaFutures
+  with MockFactory
 {
-  implicit val defaultPatience =
-    PatienceConfig(timeout = Span(10, Seconds), interval = Span(500, Millis))
+  implicit val defaultPatience = PatienceConfig(timeout = Span(10, Seconds), interval = Span(500, Millis))
 
   implicit val ActorSystemTest = ActorSystem("monitor-test", ConfigTest)
-
-  before {
-    reset(MockClient)
-  }
+  val MockClient    : GenericClient  = mock[GenericClient]
 
   after {
     ActorSystemTest.terminate()
@@ -42,7 +38,7 @@ class MonitorITest
   "Given a monitor instance, " - {
 
     "I should get a cached version when queried" in {
-      when(MockClient.getDetails(mkEq(DefaultTimeout))).thenReturn(successful(SampleConnectedMessage1))
+      (MockClient.getDetails(_:FiniteDuration)).expects(DefaultTimeout).returns(successful(SampleConnectedMessage1)).once()
 
       val monitor = Monitor(Seq(MockClient))
 
@@ -54,9 +50,10 @@ class MonitorITest
     }
 
     "I should get a cached version when if the " in {
-      when(MockClient.getDetails(mkEq(DefaultTimeout)))
-        .thenReturn(successful(SampleConnectedMessage1))
-        .thenReturn(failed(new RuntimeException("test")))
+      inSequence{
+        (MockClient.getDetails(_:FiniteDuration)).expects(DefaultTimeout).returns(successful(SampleConnectedMessage1)).once()
+        (MockClient.getDetails(_:FiniteDuration)).expects(DefaultTimeout).returns(failed(new RuntimeException("test"))).once()
+      }
 
       val monitor = Monitor(Seq(MockClient))
 
@@ -70,11 +67,10 @@ class MonitorITest
   }
 }
 
-object MonitorITest {
+object MonitorISpec {
 
   val DefaultTimeout: FiniteDuration = 5 seconds
   val ConfigTest    : Config         = ConfigFactory.load("application-tst.conf")
-  val MockClient    : GenericClient  = mock(classOf[GenericClient])
 
   val SampleDateTime1        : ZonedDateTime = ZonedDateTime.now()
   val SampleConnectedMessage1: ClientDetails = ClientDetails(

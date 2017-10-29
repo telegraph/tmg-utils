@@ -3,7 +3,8 @@ package uk.co.telegraph.utils.config
 import java.net.URL
 
 import com.typesafe.config.ConfigFactory.parseMap
-import com.typesafe.config.{Config, ConfigFactory, ConfigMemorySize}
+import com.typesafe.config.{Config, ConfigFactory}
+import uk.co.telegraph.utils._
 import uk.co.telegraph.utils.cipher.Decrypter
 
 import scala.collection.convert.WrapAsJava._
@@ -12,12 +13,7 @@ import scala.concurrent.duration._
 import scala.language.{implicitConversions, postfixOps}
 import scala.util.Try
 
-trait ConfigExtensions {
-  implicit def toConfigExtensions(left:Config):ConfigExtensionsImpl = {
-    new ConfigExtensionsImpl(left)
-  }
-
-  private [utils] class ConfigExtensionsImpl (left:Config){
+private [utils] class ConfigExtensionsImpl (left:Config){
 
     import ConfigLoader._
 
@@ -85,8 +81,6 @@ trait ConfigExtensions {
     private def decryptPath(path:String)(implicit decrypter:Decrypter):String =
       (get[String] _ ).andThen(decrypter.decrypt)(path)
   }
-}
-
 
 trait ConfigLoader[A] { seft =>
   def load(config:Config, path:String):A
@@ -124,23 +118,14 @@ object ConfigLoader {
 
   //Config => Config
   implicit val configLoader: ConfigLoader[Config] = ConfigLoader(_.getConfig)
-  implicit val seqConfigLoader: ConfigLoader[Seq[Config]] = ConfigLoader(_.getConfigList).map(_.toList)
-
-  //Config => Bytes
-  implicit val bytesLoader: ConfigLoader[ConfigMemorySize] = ConfigLoader(_.getMemorySize)
-  implicit val seqBytesLoader: ConfigLoader[Seq[ConfigMemorySize]] = ConfigLoader(_.getMemorySizeList).map(_.toList)
 
   //Config => Url
   implicit val urlLoader: ConfigLoader[URL] = stringLoader.map(new URL(_))
-  implicit val seqUrlLoader: ConfigLoader[Seq[URL]] = seqStringLoader.map( _.map(new URL(_)))
 
   //Config => Duration
   implicit val durationLoader: ConfigLoader[Duration] = ConfigLoader { config => path =>
     if (!config.getIsNull(path)) config.getDuration(path).toNanos nanos else Duration.Inf
   }
-  implicit val seqDurationLoader: ConfigLoader[Seq[Duration]] = ConfigLoader(_.getDurationList).map(_.toList.map(_.toNanos.nanos))
-
   //Config => FiniteDuration
   implicit val finiteDurationLoader: ConfigLoader[FiniteDuration] = ConfigLoader(_.getDuration).map(_.toNanos nanos)
-  implicit val seqFiniteDurationLoader: ConfigLoader[Seq[FiniteDuration]] = ConfigLoader(_.getDurationList).map(_.toList.map(_.toNanos.nanos))
 }

@@ -22,7 +22,7 @@ lazy val httpClient = (project in file("http-client"))
 lazy val httpClientTestKit = (project in file("http-client-testkit"))
   .settings(
     name := "http-client-testkit",
-    HttpClient
+    HttpClientTestKit
   )
   .dependsOn(httpClient)
 

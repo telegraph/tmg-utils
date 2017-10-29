@@ -12,7 +12,7 @@ import uk.co.telegraph.utils.client.http.impl.HttpClient
 import uk.co.telegraph.utils.client.http.impl.settings.HttpSettings
 import uk.co.telegraph.utils.client.http.scaladsl.HttpContext
 
-trait HttpClientHelper { this:MockFactory =>
+trait HttpClientHelperSpecs { this:MockFactory =>
 
   trait HttpConnector {
     def doRequest(httpRequest: HttpRequest): HttpResponse

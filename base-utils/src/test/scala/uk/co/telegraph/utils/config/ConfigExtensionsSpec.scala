@@ -13,6 +13,7 @@ import uk.co.telegraph.utils.config.ConfigExtensionsSpec._
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.Success
+import scala.collection.convert.WrapAsJava._
 
 class ConfigExtensionsSpec
   extends FreeSpec
@@ -30,14 +31,27 @@ class ConfigExtensionsSpec
     "It should be possible to extract an Integer" in {
       ConfigSample.get[Int]("app.client.maxResults") shouldBe 10
     }
+    "It should be possible to extract a Seq[Int]" in {
+      ConfigSample.get[Seq[Int]]("app.client.execRange") shouldBe Seq(0, 10)
+    }
     "It should be possible to extract a Double" in {
       ConfigSample.get[Double]("app.client.defaultPrice") shouldBe 10.5
+    }
+    "It should be possible to extract a Seq[Double]" in {
+      ConfigSample.get[Seq[Double]]("app.client.priceRange") shouldBe Seq(1.0, 20.0)
     }
     "It should be possible to extract a FiniteDuration" in {
       ConfigSample.get[FiniteDuration]("app.client.timeout") shouldBe (10 seconds)
     }
+    "It should be possible to extract a Durations" in {
+      ConfigSample.get[Duration]("app.client.timeout") shouldBe (10 seconds)
+      ConfigSample.get[Duration]("app.client.idleTimeout") shouldBe Duration.Inf
+    }
     "It should be possible to extract a Boolean" in {
       ConfigSample.get[Boolean]("app.client.isSecure") shouldBe true
+    }
+    "It should be possible to extract a Seq[Boolean]" in {
+      ConfigSample.get[Seq[Boolean]]("app.client.featureFlags") shouldBe Seq(true, false)
     }
     "It should be possible to extract an Option" in {
       ConfigSample.getOption[Int]("app.client.connections") shouldBe Some(9)
@@ -48,10 +62,10 @@ class ConfigExtensionsSpec
       ConfigSample.getTry[Int]("app.client.retry-connections").isFailure shouldBe true
     }
     "It should be possible to extract a Map[String,String]" in {
-      ConfigSample.toMap[String]("app.client.map") shouldBe Map("param1" -> "value1", "param2" -> "value2", "param3" -> "value3")
+      ConfigSample.toMap[String]("app.client.headers") shouldBe HeadersSample
     }
     "It should be possible to extract a Configuration" in {
-      ConfigSample.getConfigOrEmpty("app.client.map") shouldBe SubConfigSample
+      ConfigSample.getConfigOrEmpty("app.client.headers") shouldBe SubConfigSample
       ConfigSample.getConfigOrEmpty("app.client.plain-text") shouldBe ConfigFactory.empty()
     }
 
@@ -64,8 +78,8 @@ class ConfigExtensionsSpec
       newConfig.get[FiniteDuration]("app.test.client.timeout") shouldBe (10 seconds)
       newConfig.getOption[Int]("app.test.client.connections") shouldBe Some(9)
       newConfig.getTry[Int]("app.test.client.connections") shouldBe Success(9)
-      newConfig.toMap[String]("app.test.client.map") shouldBe Map("param1" -> "value1", "param2" -> "value2", "param3" -> "value3")
-      newConfig.getConfigOrEmpty("app.test.client.map") shouldBe SubConfigSample
+      newConfig.toMap[String]("app.test.client.headers") shouldBe HeadersSample
+      newConfig.getConfigOrEmpty("app.test.client.headers") shouldBe SubConfigSample
     }
 
     "it should be possible to get an encrypted value" in {
@@ -77,7 +91,7 @@ class ConfigExtensionsSpec
     "it should be possible to get an encrypted config" in {
       decypher.decrypt _ when DecipherConfigRequest returns DecipherConfigResult
 
-      val config = ConfigSample.getEncryptedConfig("app.client.secrets")
+      val config = ConfigSample.getEncryptedConfig("app.client.cipher")
 
       config.get[String]("username") shouldBe "user1"
       config.get[String]("password") shouldBe "pass2"
@@ -88,35 +102,13 @@ class ConfigExtensionsSpec
 
 object ConfigExtensionsSpec{
 
-  val ConfigSample: Config = ConfigFactory.parseString(
-    """
-      |app {
-      |  client {
-      |    baseUrl     : "http://www.test.com:1999"
-      |    maxResults  : 10
-      |    defaultPrice: 10.5
-      |    timeout     : 10 seconds
-      |    connections :  9
-      |    isSecure    : true
-      |    map {
-      |      param1: "value1"
-      |      param2: "value2"
-      |      param3: "value3"
-      |    }
-      |    password: "dGhpcy1pcy1hLXRlc3Q="
-      |    secrets : "ew0KICB1c2VybmFtZTogInVzZXIxIg0KICBwYXNzd29yZDogInBhc3MyIg0KfQ=="
-      |  }
-      |}
-    """.stripMargin)
+  val HeadersSample  : Map[String, String] = Map(
+    "content-type" -> "application/json",
+    "accept"       -> "application/json"
+  )
 
-  val SubConfigSample: Config = ConfigFactory.parseString(
-    s"""
-       |{
-       |  param1: "value1"
-       |  param2: "value2"
-       |  param3: "value3"
-       |}
-     """.stripMargin)
+  val ConfigSample   : Config = ConfigFactory.load("application.tst.conf")
+  val SubConfigSample: Config = ConfigFactory.parseMap(HeadersSample)
 
   val DecipherParamRequest:Cipher = "dGhpcy1pcy1hLXRlc3Q="
   val DecipherParamResult :String = "secret-password"

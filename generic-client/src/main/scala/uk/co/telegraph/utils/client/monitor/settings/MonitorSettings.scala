@@ -1,7 +1,9 @@
 package uk.co.telegraph.utils.client.monitor.settings
 
+import akka.actor.ActorSystem
 import com.typesafe.config.Config
 import uk.co.telegraph.utils._
+import uk.co.telegraph.utils.settings.Settings
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -20,8 +22,11 @@ object MonitorSettings extends Settings[MonitorSettings]("app.monitoring"){
     clientTimeout: FiniteDuration
   ) extends MonitorSettings
 
+  def apply()(implicit actorSystem: ActorSystem): MonitorSettings =
+    MonitorSettings(actorSystem.settings.config, actorSystem.settings.config)
+
   override protected def fromSubConfig(root: Config, inner: Config): MonitorSettings = {
-    val conf:Config = inner.withFallback(root getConfig prefix)
+    val conf:Config = inner.withFallback(root getConfig defaultPrefix)
 
     MonitorSettingsImpl(
       delay         = conf get[FiniteDuration] "delay",

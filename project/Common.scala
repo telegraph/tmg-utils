@@ -8,13 +8,13 @@ object Common extends AutoPlugin {
 
   override def trigger: PluginTrigger = allRequirements
 
-  lazy val buildNumber = sys.env.get("BUILD_NUMBER").map( bn => s"b$bn")
+  lazy val buildNumber: Option[String] = sys.env.get("BUILD_NUMBER").map(bn => s"b$bn")
 
   override lazy val projectSettings = Seq(
     organization      := "uk.co.telegraph",
     organizationName  := "Telegraph Media Group",
 
-    version           := "1.0.0-" + buildNumber.getOrElse("SNAPSHOT"),
+    version           := "1.0.1-" + buildNumber.getOrElse("SNAPSHOT"),
     scalaVersion      := "2.11.8",
     isSnapshot        := buildNumber.isEmpty,
     scalacOptions     ++= Seq(

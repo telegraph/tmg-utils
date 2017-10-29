@@ -1,11 +1,13 @@
 package uk.co.telegraph.utils.client.http.serialization
 
+import java.lang.Exception
 import java.lang.reflect.InvocationTargetException
 
 import akka.http.scaladsl.marshalling.{Marshaller, ToEntityMarshaller}
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import akka.http.scaladsl.unmarshalling.{FromEntityUnmarshaller, Unmarshaller}
 import akka.util.ByteString
+import com.fasterxml.jackson.core.io.JsonEOFException
 import org.json4s.{Formats, MappingException, Serialization, jackson}
 
 /**
@@ -37,7 +39,7 @@ trait Json4sSupport {
   implicit def unmarshaller[A: Manifest](implicit formats: Formats): FromEntityUnmarshaller[A] =
     jsonStringUnmarshaller.map( serialization.read[A] )
       .recover { _ => _ => {
-        case MappingException(_, ite: InvocationTargetException) => throw ite.getCause
+        case ex:JsonEOFException => throw MappingException("Fail to parse JsonPayload", ex)
       }}
 
   /**

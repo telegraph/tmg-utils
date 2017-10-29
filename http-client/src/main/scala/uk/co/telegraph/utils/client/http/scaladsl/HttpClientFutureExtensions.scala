@@ -60,7 +60,7 @@ private [scaladsl] case class HttpClientFutureExtensions(left:Future[HttpContext
   def ignorePayload:Future[HttpContext] = {
     for{
       ctx <- left
-      _ <- Try{ctx.response.entity.discardBytes().future()} getOrElse EmptyFuture
+      _ <- Try{ctx.response.discardEntityBytes().future()} getOrElse EmptyFuture
     } yield ctx
   }
 }

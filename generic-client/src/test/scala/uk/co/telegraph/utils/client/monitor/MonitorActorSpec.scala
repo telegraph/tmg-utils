@@ -3,70 +3,77 @@ package uk.co.telegraph.utils.client.monitor
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-import scala.concurrent.Future.{failed, successful}
 import akka.actor.{ActorSystem, OneForOneStrategy, Props}
 import akka.event.LoggingAdapter
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.{Config, ConfigFactory}
-import org.mockito.ArgumentMatchers.{eq => mkEq}
-import org.mockito.Mockito._
-import org.scalatest.{mock => _, _}
+import org.scalamock.scalatest.MockFactory
+import org.scalatest._
 import uk.co.telegraph.utils.client.GenericClient
 import uk.co.telegraph.utils.client.models.{ClientDetails, MonitorDto}
 import uk.co.telegraph.utils.client.monitor.MonitorActor.{GetData, Refresh}
-import uk.co.telegraph.utils.client.monitor.MonitorActorTest._
+import uk.co.telegraph.utils.client.monitor.MonitorActorSpec._
 import uk.co.telegraph.utils.client.monitor.settings.MonitorSettings
 
+import scala.concurrent.Future.{failed, successful}
 import scala.concurrent.duration.{FiniteDuration, _}
 import scala.language.postfixOps
 
-class MonitorActorTest extends TestKit(ActorSystemTest)
+class MonitorActorSpec extends TestKit(ActorSystemTest)
   with ImplicitSender
-  with FunSpecLike
+  with FreeSpecLike
   with Matchers
   with BeforeAndAfter
   with BeforeAndAfterAll
   with OneInstancePerTest
+  with MockFactory
 {
 
-  before{
-    reset(MockClient)
-    when(MockClient.getDetails(mkEq( DefaultTimeout )))
-      .thenReturn(successful(SampleConnectedMessage1))
-      .thenReturn(successful(SampleConnectedMessage2))
-      .thenReturn(failed(new RuntimeException("Sample Exception")))
-  }
+  val MockClient       : GenericClient  = mock[GenericClient]
+  val MockLogging      : LoggingAdapter = stub[LoggingAdapter]
+  val MonitorActorProps: Props          = Props(new MonitorActorMock(MonitorSettings(), Seq(MockClient), MockLogging))
 
   override def afterAll(): Unit ={
     TestKit.shutdownActorSystem(system)
   }
 
-  describe("Given the Monitor System, "){
+  "Given the Monitor System, " - {
 
-    describe("When no data is yet available, "){
+    "When no data is yet available, " - {
 
-      it("If the 'Refresh' message is received, the system should collect fresh data"){
-        val actorRef = TestActorRef(Props(classOf[MonitorActorMock]) )
+      "If the 'Refresh' message is received, the system should collect fresh data" in {
+        (MockClient.getDetails(_:FiniteDuration)).expects(DefaultTimeout)
+          .returning(successful(SampleConnectedMessage1))
+          .once()
+
+        val actorRef = TestActorRef(MonitorActorProps)
 
         actorRef ! Refresh
-        verify( MockClient, times(1) ).getDetails( mkEq( DefaultTimeout ))
         actorRef.stop()
       }
 
-      it("If the 'GetData' message is received, the system should return and store fresh data"){
-        val actorRef = TestActorRef(Props(classOf[MonitorActorMock]) )
+      "If the 'GetData' message is received, the system should return and store fresh data" in {
+        (MockClient.getDetails(_:FiniteDuration)).expects(DefaultTimeout)
+          .returning(successful(SampleConnectedMessage1))
+          .once()
+
+        val actorRef = TestActorRef(MonitorActorProps)
 
         actorRef ! GetData()
         expectMsg(MonitorDto(cached = false, Seq(SampleConnectedMessage1)) )
-        verify( MockClient, times(1) ).getDetails( mkEq( DefaultTimeout ))
+
         actorRef.stop()
       }
     }
 
-    describe("When the cache is pre-loaded with data, "){
+    "When the cache is pre-loaded with data, " - {
 
-      it("If the 'GetData' message is received, the system should return the cached data"){
-        val actorRef = TestActorRef(Props(classOf[MonitorActorMock]) )
+      "If the 'GetData' message is received, the system should return the cached data" in {
+        (MockClient.getDetails(_:FiniteDuration)).expects(DefaultTimeout)
+          .returning(successful(SampleConnectedMessage1))
+          .once()
+
+        val actorRef = TestActorRef(MonitorActorProps)
 
         actorRef ! Refresh
 
@@ -76,13 +83,16 @@ class MonitorActorTest extends TestKit(ActorSystemTest)
         actorRef ! GetData()
         expectMsg(MonitorDto(cached = true, Seq(SampleConnectedMessage1)) )
 
-        verify( MockClient, times(1) ).getDetails( mkEq( DefaultTimeout ))
         actorRef.stop()
       }
 
-      it("If the 'GetData' message is received with 'fresh=True', the system should return the new data"){
-        val actorRef = TestActorRef(Props(classOf[MonitorActorMock]) )
+      "If the 'GetData' message is received with 'fresh=True', the system should return the new data" in {
+        inSequence{
+          (MockClient.getDetails(_:FiniteDuration)).expects(DefaultTimeout).returning(successful(SampleConnectedMessage1)).once()
+          (MockClient.getDetails(_:FiniteDuration)).expects(DefaultTimeout).returning(successful(SampleConnectedMessage2)).once()
+        }
 
+        val actorRef = TestActorRef(MonitorActorProps)
         actorRef ! Refresh
 
         actorRef ! GetData()
@@ -91,12 +101,16 @@ class MonitorActorTest extends TestKit(ActorSystemTest)
         actorRef ! GetData(true)
         expectMsg(MonitorDto(cached = false, Seq(SampleConnectedMessage2)) )
 
-        verify( MockClient, times(2) ).getDetails( mkEq( DefaultTimeout ))
         actorRef.stop()
       }
 
-      it("If the 'Refresh' message is received, new data must be cached."){
-        val actorRef = TestActorRef(Props(classOf[MonitorActorMock]) )
+      "If the 'Refresh' message is received, new data must be cached." in {
+        inSequence{
+          (MockClient.getDetails(_:FiniteDuration)).expects(DefaultTimeout).returning(successful(SampleConnectedMessage1)).once()
+          (MockClient.getDetails(_:FiniteDuration)).expects(DefaultTimeout).returning(successful(SampleConnectedMessage2)).once()
+        }
+
+        val actorRef = TestActorRef(MonitorActorProps)
 
         actorRef ! Refresh
         actorRef ! GetData()
@@ -106,12 +120,17 @@ class MonitorActorTest extends TestKit(ActorSystemTest)
         actorRef ! GetData()
         expectMsg(MonitorDto(cached = true, Seq(SampleConnectedMessage2)) )
 
-        verify( MockClient, times(2) ).getDetails( mkEq( DefaultTimeout ))
         actorRef.stop()
       }
 
-      it("If the 'Refresh' operation fails, I should keep the cached values"){
-        val actorRef = TestActorRef(Props(classOf[MonitorActorMock]) )
+      "If the 'Refresh' operation fails, I should keep the cached values" in {
+        inSequence{
+          (MockClient.getDetails(_:FiniteDuration)).expects(DefaultTimeout).returning(successful(SampleConnectedMessage1)).once()
+          (MockClient.getDetails(_:FiniteDuration)).expects(DefaultTimeout).returning(successful(SampleConnectedMessage2)).once()
+          (MockClient.getDetails(_:FiniteDuration)).expects(DefaultTimeout).returning(failed(new RuntimeException("Sample Exception"))).once()
+        }
+
+        val actorRef = TestActorRef(MonitorActorProps)
 
         actorRef ! Refresh
         actorRef ! GetData()
@@ -125,25 +144,25 @@ class MonitorActorTest extends TestKit(ActorSystemTest)
         actorRef ! GetData()
         expectMsg(MonitorDto(cached = true, Seq(SampleConnectedMessage2)) )
 
-        verify( MockClient, times(3) ).getDetails( mkEq( DefaultTimeout ))
         actorRef.stop()
       }
 
-      it("If the actor dies, it should restart "){
-        val actorRef = TestActorRef[MonitorActorMock](Props(classOf[MonitorActorMock]) )
+      "If the actor dies, it should restart " in {
+        val actorRef = TestActorRef[MonitorActorMock](MonitorActorProps)
         actorRef.underlyingActor.supervisorStrategy shouldBe a [OneForOneStrategy]
       }
 
-      it("should log non valid messages"){
-        val actorRef = TestActorRef[MonitorActorMock](Props(classOf[MonitorActorMock]) )
+      "should log non valid messages" in {
+        (MockLogging.error(_:String)).verify(s"Message will not be processed: 'Test'").returns(())
+
+        val actorRef = TestActorRef[MonitorActorMock](MonitorActorProps)
         actorRef ! "Test"
-        verify(MockLogging, times(1)).error(s"Message will not be processed: 'Test'")
       }
     }
   }
 }
 
-object MonitorActorTest{
+object MonitorActorSpec{
   val DefaultTimeout:FiniteDuration = 5 second
   val Config: Config = ConfigFactory.parseString(
     """app.monitoring {
@@ -173,12 +192,11 @@ object MonitorActorTest{
     configs         = Map.empty,
     command         = "test"
   )
-  val MockClient: GenericClient = mock(classOf[GenericClient])
-  val MockLogging: LoggingAdapter = mock(classOf[LoggingAdapter])
 
-  class MonitorActorMock extends MonitorActor{
-    override lazy val settings: MonitorSettings = MonitorSettings()
-    override def log: LoggingAdapter = MockLogging
-    override val clients = Seq(MockClient)
-  }
+  class MonitorActorMock
+  (
+    val settings:MonitorSettings,
+    val clients:Seq[GenericClient],
+    override val log: LoggingAdapter
+  ) extends MonitorActor
 }

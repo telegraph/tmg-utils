@@ -2,13 +2,12 @@ package uk.co.telegraph.utils.client.http.impl.settings
 
 import java.net.URL
 
-import akka.http.scaladsl.model.HttpMethods.HEAD
-import akka.http.scaladsl.model.{HttpMethod, HttpMethods}
 import akka.http.scaladsl.settings.ConnectionPoolSettings
 import com.typesafe.config.Config
+import uk.co.telegraph.utils._
+import uk.co.telegraph.utils.settings.Settings
 
 import scala.language.{implicitConversions, postfixOps}
-import uk.co.telegraph.utils._
 
 abstract class HttpSettings {
   def port          : Int
@@ -36,7 +35,7 @@ object HttpSettings extends Settings[HttpSettings]("tmg.http.client"){
   ) extends HttpSettings
 
   protected def fromSubConfig(root:Config, inner:Config): HttpSettings ={
-    val conf:Config      = inner.withFallback(root getConfig prefix)
+    val conf:Config      = inner.withFallback(root getConfig defaultPrefix)
     val url:URL          = conf.get[URL]("baseUrl")
 
     HttpSettingsImpl(
@@ -47,13 +46,9 @@ object HttpSettings extends Settings[HttpSettings]("tmg.http.client"){
       parallelism       = conf.get[Int     ]("parallelism"),
       isSecure          = conf.get[Boolean ]("secure") || url.getProtocol == "https",
       health            = HttpHealthSettings    (root, inner getConfigOrEmpty "health"),
-      connectionPool    = ConnectionPoolSettings{
-        val connectionPoolConf = (conf.getConfigOrEmpty("host-connection-pool") prefixKeysWith AkkaDefaultConnectionPoolConfig).withFallback(root)
-        connectionPoolConf
-      }
+      connectionPool    = ConnectionPoolSettings(
+        (conf.getConfigOrEmpty("host-connection-pool") prefixKeysWith AkkaDefaultConnectionPoolConfig).withFallback(root)
+      )
     )
   }
-
-  implicit private def toHttpMethod(method:String): HttpMethod =
-    HttpMethods.getForKey(method.toUpperCase).getOrElse(HEAD)
 }

@@ -1,8 +1,8 @@
 package uk.co.telegraph.utils.client.http.exceptions
 
-import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
+import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCode}
 
-class HttpInvalidStatusException(message:String, cause:Throwable) extends HttpClientException(message, cause)
+case class HttpInvalidStatusException(statusCode: StatusCode, message:String, cause:Throwable) extends HttpClientException(message, cause)
 
 object HttpInvalidStatusException{
 
@@ -10,5 +10,5 @@ object HttpInvalidStatusException{
     s"Request [${httpRequest.method.name} ${httpRequest.uri}] failed with $httpResponse. Cause: '${Option(cause).map(_.getMessage).getOrElse("-")}'"
 
   def apply(httpRequest: HttpRequest, httpResponse: HttpResponse, cause:Throwable = null):HttpClientException =
-    new HttpInvalidStatusException(errorMsgFormatter(httpRequest, httpResponse, cause), cause)
+    HttpInvalidStatusException(httpResponse.status, errorMsgFormatter(httpRequest, httpResponse, cause), cause)
 }

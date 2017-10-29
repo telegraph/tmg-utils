@@ -8,9 +8,9 @@ import org.scalatest.{BeforeAndAfterAll, FreeSpec, Matchers}
 import scala.language.postfixOps
 import scala.concurrent.duration._
 
-class HttpSettingsTest extends FreeSpec with Matchers with BeforeAndAfterAll {
+class HttpSettingsSpecs extends FreeSpec with Matchers with BeforeAndAfterAll {
 
-  import HttpSettingsTest._
+  import HttpSettingsSpecs._
 
   override protected def afterAll(): Unit = {
     TestActorSystem.terminate()
@@ -19,7 +19,7 @@ class HttpSettingsTest extends FreeSpec with Matchers with BeforeAndAfterAll {
   "Given the 'HttpSettings', " - {
 
     "I should be able to map a valid config to HttpSettings" in {
-      val settings = HttpSettings(SampleConfig)
+      val settings = HttpSettings(DefaultConfig, SampleConfig)
 
       settings.baseUrl           shouldBe "http://test-service:21123/sample-service"
       settings.health.method     shouldBe OPTIONS
@@ -34,7 +34,7 @@ class HttpSettingsTest extends FreeSpec with Matchers with BeforeAndAfterAll {
     }
 
     "I should be able to use default settings if some fields are not present" in {
-      val settings = HttpSettings(SampleConfigWithoutSomeFields)
+      val settings = HttpSettings(DefaultConfig, SampleConfigWithoutSomeFields)
 
       settings.baseUrl        shouldBe "http://test-service:21123/sample-service"
       settings.health.method  shouldBe HEAD
@@ -52,7 +52,7 @@ class HttpSettingsTest extends FreeSpec with Matchers with BeforeAndAfterAll {
 //    }
 
     "I should get a secure connection when using 'https'" in {
-      val settings = HttpSettings(SampleConfigWithSSL)
+      val settings = HttpSettings(DefaultConfig, SampleConfigWithSSL)
 
       settings.baseUrl        shouldBe "https://test-service:21123/sample-service"
       settings.isSecure       shouldBe true
@@ -60,7 +60,7 @@ class HttpSettingsTest extends FreeSpec with Matchers with BeforeAndAfterAll {
     }
 
     "I should get port 80 when using 'http' protocol and not setting the port in the Url" in {
-      val settings = HttpSettings(SampleConfigWithoutPort)
+      val settings = HttpSettings(DefaultConfig, SampleConfigWithoutPort)
 
       settings.baseUrl        shouldBe "http://test-service/sample-service"
       settings.isSecure       shouldBe false
@@ -68,7 +68,7 @@ class HttpSettingsTest extends FreeSpec with Matchers with BeforeAndAfterAll {
     }
 
     "I should get port 443 when using 'https' protocol and not setting the port in the Url" in {
-      val settings = HttpSettings(SampleConfigSSLWithoutPort)
+      val settings = HttpSettings(DefaultConfig, SampleConfigSSLWithoutPort)
 
       settings.baseUrl        shouldBe "https://test-service/sample-service"
       settings.isSecure       shouldBe true
@@ -77,13 +77,13 @@ class HttpSettingsTest extends FreeSpec with Matchers with BeforeAndAfterAll {
   }
 }
 
-object HttpSettingsTest{
+object HttpSettingsSpecs{
   implicit val TestActorSystem = ActorSystem()
 
-  val Config                       : Config = ConfigFactory.load("application.tst.conf")
-  val SampleConfig                 : Config = Config.getConfig("app.sample-1")
-  val SampleConfigWithoutSomeFields: Config = Config.getConfig("app.sample-2")
-  val SampleConfigWithSSL          : Config = Config.getConfig("app.sample-3")
-  val SampleConfigWithoutPort      : Config = Config.getConfig("app.sample-4")
-  val SampleConfigSSLWithoutPort   : Config = Config.getConfig("app.sample-5")
+  val DefaultConfig                : Config = ConfigFactory.load("application.tst.conf")
+  val SampleConfig                 : Config = DefaultConfig.getConfig("app.sample-1")
+  val SampleConfigWithoutSomeFields: Config = DefaultConfig.getConfig("app.sample-2")
+  val SampleConfigWithSSL          : Config = DefaultConfig.getConfig("app.sample-3")
+  val SampleConfigWithoutPort      : Config = DefaultConfig.getConfig("app.sample-4")
+  val SampleConfigSSLWithoutPort   : Config = DefaultConfig.getConfig("app.sample-5")
 }

@@ -4,13 +4,13 @@ import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.{Config, ConfigFactory}
 import org.scalatest._
-import uk.co.telegraph.utils.client.monitor.ScheduledActorTest._
+import uk.co.telegraph.utils.client.monitor.ScheduledActorSpec._
 import uk.co.telegraph.utils.client.monitor.settings.MonitorSettings
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-class ScheduledActorTest extends TestKit(ActorSystemTest)
+class ScheduledActorSpec extends TestKit(ActorSystemTest)
   with ImplicitSender
   with FreeSpecLike
   with Matchers
@@ -35,7 +35,7 @@ class ScheduledActorTest extends TestKit(ActorSystemTest)
   }
 }
 
-object ScheduledActorTest{
+object ScheduledActorSpec{
 
   val Config: Config = ConfigFactory.parseString(
     """app.monitoring {
