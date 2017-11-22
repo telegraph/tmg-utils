@@ -67,7 +67,7 @@ trait HttpClient extends GenericClient {
   /**
     * Sets the Supervision Decider
     */
-  private val decider: Supervision.Decider = _ => Supervision.Stop
+  protected val decider: Supervision.Decider = _ => Supervision.Resume
 
   /**
     * Basic HttpRequest -> HttpResponse Flow
