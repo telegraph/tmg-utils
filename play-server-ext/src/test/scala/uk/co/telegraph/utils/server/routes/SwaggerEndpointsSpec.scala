@@ -14,7 +14,8 @@ class SwaggerEndpointsSpec
       val swaggerFile = SwaggerEndpoints.getFile()
 
       swaggerFile shouldBe a[Some[File]]
-      swaggerFile.get.getPath shouldBe s"${SwaggerEndpoints.resourceFolder}/specs/swagger.json"
+      swaggerFile.get.getPath should ( equal (s"${SwaggerEndpoints.resourceFolder}/specs/swagger.json")
+        or equal(s"${SwaggerEndpoints.resourceFolder}/specs/swagger.yaml"))
     }
     "when retrieving the mimetype of yaml file, it should be 'text/x-yaml'" in {
       val swaggerFile = new File(s"${SwaggerEndpoints.resourceFolder}/specs/swagger.yaml")
