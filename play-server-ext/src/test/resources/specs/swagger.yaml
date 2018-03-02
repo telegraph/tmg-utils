@@ -1,0 +1,513 @@
+swagger: "2.0"
+
+################################################################################
+#                                 API Information                              #
+################################################################################
+info:
+  version: '0.1.0'
+  title: 'My Telegraph API'
+  description: |
+    This is the My Telegraph API definition.  To get profiles, preferences,
+    product data, gaming state, comments etc.
+  contact:
+    email: alex.mansfield-scaddan@telegraph.co.uk
+
+# during dev, this should point to a development environment
+host: api.telegraph.co.uk
+
+# basePath prefixes all resource paths
+basePath: /mytelegraph/v0.1.0/
+
+tags:
+  - name: follow
+    description: Follow an author or a topic
+  - name: save
+    description: Save an article for later consumption
+  - name: user-preferences
+    description: User preferences
+
+# only consider using https
+schemes:
+  - https
+
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+  - text/xml
+# format of the response to the client  (Accept)
+produces:
+  - application/json
+  - text/html
+
+################################################################################
+#                                  Security                                    #
+################################################################################
+# Current thinking - this may change
+security:
+  - jwt: []
+securityDefinitions:
+  jwt:
+    type: apiKey
+    name: Authorization
+    in: header
+
+################################################################################
+#                                   Paths                                      #
+################################################################################
+paths:
+  ########################### preferences ######################################
+  /user/{tmgid}/preferences:
+    get:
+      summary: Users preferences
+      operationId: getUserPreferences
+      tags:
+        - user-preferences
+      parameters:
+        - name: tmgid
+          in: path
+          required: true
+          description: The tmgid of the user, obtained from SAM
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Preferences'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  ########################### follow ###########################################
+  # author
+  /user/{tmgid}/preferences/follow/authors:
+    get:
+      tags:
+        - follow
+      summary: Gets all authors for a user
+      description: Returns a list of authors the user is following
+      parameters:
+        - in: path
+          name: tmgid
+          description: The tmgid of the user, obtained from SAM
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/Error'
+
+  /user/{tmgid}/preferences/follow/authors/{authorId}:
+    get:
+      tags:
+        - follow
+      summary: Gets author for a user
+      description: Returns an author the user is following
+      parameters:
+        - in: path
+          name: tmgid
+          description: The tmgid of the user, obtained from SAM
+          required: true
+          type: string
+        - in: path
+          name: authorId
+          description: The name of the author
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/Error'
+
+    post:
+      tags:
+        - follow
+      summary: Add author to follow
+      description: Add te author to the authors that the user follows
+      parameters:
+        - in: path
+          name: tmgid
+          description: The tmgid of the user, obtained from SAM
+          required: true
+          type: string
+        - name: authorId
+          in: path
+          description: The name of the author to follow
+          required: true
+          type: string
+      responses:
+        201:
+          description: Created
+        400:
+          description: Invalid request
+
+    delete:
+      tags:
+        - follow
+      summary: Stop following the author
+      description: Remove the author for those the user is currently following
+      parameters:
+        - in: path
+          name: tmgid
+          description: The tmgid of the user, obtained from SAM
+          required: true
+          type: string
+        - name: authorId
+          in: path
+          description: The name of the author to stop following
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+        404:
+          description: Author not found
+
+  # topic
+  /user/{tmgid}/preferences/follow/topics:
+    get:
+      tags:
+        - follow
+      summary: Gets all topics for a user
+      description: Returns a list of topics the user is following
+      parameters:
+        - in: path
+          name: tmgid
+          description: The tmgid of the user, obtained from SAM
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/Error'
+
+  /user/{tmgid}/preferences/follow/topics/{topicId}:
+    get:
+      tags:
+        - follow
+      summary: Gets topic for a user
+      description: Returns a topic the user is following
+      parameters:
+        - in: path
+          name: tmgid
+          description: The tmgid of the user, obtained from SAM
+          required: true
+          type: string
+        - in: path
+          name: topicId
+          description: The id for the topic to follow
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+        404:
+          description: Topic not found
+          schema:
+            $ref: '#/definitions/Error'
+
+    post:
+      tags:
+        - follow
+      summary: Add topic to follow
+      description: Add the topic to the topics that the user follows
+      parameters:
+        - in: path
+          name: tmgid
+          description: The tmgid of the user, obtained from SAM
+          required: true
+          type: string
+        - name: topicId
+          in: path
+          description: The name of the topic to follow
+          required: true
+          type: string
+      responses:
+        201:
+          description: Created
+        400:
+          description: Invalid request
+
+    delete:
+      tags:
+        - "follow"
+      summary: Stop following the topic
+      description: Remove the topic for those the user is currently following
+      parameters:
+        - in: path
+          name: tmgid
+          description: The tmgid of the user, obtained from SAM
+          required: true
+          type: string
+        - name: topicId
+          in: path
+          description: The name of the topic to stop following
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+        404:
+          description: Topic not found
+
+  ########################### save ###########################################
+  # article
+  /user/{tmgid}/preferences/save/articles:
+    get:
+      tags:
+        - save
+      summary: Gets all articles saved for a user
+      description: Returns a list of articles the user saved
+      parameters:
+        - in: path
+          name: tmgid
+          description: The tmgid of the user, obtained from SAM
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Article'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/Error'
+
+  /user/{tmgid}/preferences/save/articles/{articleId}:
+    get:
+      tags:
+        - save
+      summary: Gets the article for user
+      description: Returns the article details for the user
+      parameters:
+        - in: path
+          name: tmgid
+          description: The tmgid of the user, obtained from SAM
+          required: true
+          type: string
+        - in: path
+          name: articleId
+          description: The id for the article
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Article'
+        404:
+          description: Article not found
+          schema:
+            $ref: '#/definitions/Error'
+
+    post:
+      tags:
+        - save
+      summary: Add article
+      description: Add the article for the user
+      parameters:
+        - in: path
+          name: tmgid
+          description: The tmgid of the user, obtained from SAM
+          required: true
+          type: string
+        - name: articleId
+          in: path
+          description: The article Id
+          required: true
+          type: string
+      responses:
+        201:
+          description: Created
+        400:
+          description: Invalid request
+
+    delete:
+      tags:
+        - save
+      summary: Delete the saved article
+      description: Remove the article from the users saved article list
+      parameters:
+        - in: path
+          name: tmgid
+          description: The tmgid of the user, obtained from SAM
+          required: true
+          type: string
+        - name: articleId
+          in: path
+          description: The articleid to remove
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+        404:
+          description: Article not found
+
+  ########################### notifications ####################################
+  # /user/{tmgid}/preferences/notifications: {}
+  # TODO
+
+
+################################################################################
+#                                 Definitions                                  #
+################################################################################
+definitions:
+  User:
+    type: object
+    properties:
+      tmg_id:
+        type: string
+        format: guid
+        description: 'TMG ID used to link the user to SF / SAM'
+      profile_type:
+        type: string
+        enum:
+          - UNREGISTERED
+          - REGISTERED
+          - SUBSCRIBED
+      created_on:
+        type: string
+        format: date-time
+      notifications:
+        type: object
+        properties:
+          target:
+            $ref: '#/definitions/Notification'
+
+  Notification:
+    properties:
+      in_app_enable:
+        type: boolean
+        description: 'Flag to indicate if the user wants to receive in app notifications - likely to default to true, but may need to ask'
+      push_enable:
+        type: boolean
+        description: 'Does the user want to receive push notifications about topics'
+
+# Article contents for the "card" to display on the My Telegraph page
+  Article:
+    type: object
+    properties:
+      contentId:
+        type: string
+        description: 'The article ID from AEM'
+        example: 6a12c713-c067-33b9-991a-14d3e971061b
+        # does swagger enforce the formatting, or is there a way to do this
+        # java flake - check with Rich - travel and TCUK strategies
+      type:
+        type: string
+        description: 'The type of article'
+        example: "article"
+      headline:
+        type: string
+        description: 'The headline of the article to display, from AEM'
+        example: "Theresa May should give Leo Varadkar a ladder to climb down on"
+      url:
+        type: string
+        format: url
+        description: 'URL to the article'
+        example: http://www.telegraph.co.uk/news/2017/12/04/theresa-may-should-give-leo-varadkar-ladder-climb/
+      image_url:
+        type: string
+        format: url
+        description: 'The image associated with the article'
+        example: ''
+      authors:
+        type: array
+        description: 'The name(s) of the author'
+        items:
+          type: string
+          example:
+            - 'Asa Bennett'
+            - 'Allister Heath'
+      date_published:
+        type: string
+        format: date-time
+        example: '2017-12-04T17:36:45.522Z'
+      topics:
+        type: array
+        items:
+          type: string
+          example:
+            - 'Brexit'
+            - 'Politics'
+
+  Author:
+    type: "object"
+    allOf:
+      -
+        properties:
+          id:
+            type: "string"
+            format: guid
+          name:
+            type: "string"
+
+  KeywordsFollowed:
+    type: "object"
+    allOf:
+      -
+        properties:
+          authors:
+            type: "array"
+            items:
+              $ref: '#/components/schemas/Author'
+          topics:
+            type: "array"
+            items:
+              $ref: '#/components/schemas/Topic'
+
+  ArticlesSaved:
+    type: "object"
+    allOf:
+      -
+        properties:
+          articles:
+            type: "array"
+            items:
+              $ref: '#/components/schemas/Article'
+
+  Preferences:
+    type: "object"
+    allOf:
+      -
+        properties:
+          follow:
+            $ref: '#/components/schemas/KeywordsFollowed'
+          save:
+            $ref: '#/components/schemas/ArticlesSaved'
+          notifications:
+            $ref: '#/components/schemas/Notification'
+
+  Topic:
+    type: "object"
+    allOf:
+      -
+        properties:
+          id:
+            type: "string"
+          name:
+            type: "string"
+
+  Error:
+    type: "object"
+    allOf:
+      -
+        properties:
+          message:
+            type: "string"
+          statusCode:
+            type: "integer"
+
