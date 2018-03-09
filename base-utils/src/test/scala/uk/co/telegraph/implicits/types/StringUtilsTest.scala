@@ -1,28 +1,31 @@
 package uk.co.telegraph.implicits.types
 
 import java.util.UUID
-import org.scalatest.{Assertion, FlatSpec, Matchers}
+import org.scalatest.{Assertion, FreeSpec, Matchers}
 import uk.co.telegraph.utils.implicits.types.StringUtils
 
 class StringUtilsTest
-  extends FlatSpec
+  extends FreeSpec
     with Matchers
     with StringUtils {
 
-  it should "implicitly convert a [[String]] to a [[UUID]] with the given success function" in {
+  "StringUtilsTest"  - {
 
-    def stringAsUuidHasFailed(): Assertion = assert(false)
+    "implicitly convert a [[String]] to a [[UUID]] with the given success function" in {
 
-    val input = "88a01bf3-8368-4ac0-b487-8d465414a797"
-    input.asUuid(uuid => uuid.toString shouldBe input)(stringAsUuidHasFailed)
-  }
+      def stringAsUuidHasFailed(): Assertion = assert(false)
 
-  it should "implicitly convert a [[String]] to a [[UUID]] with the given failure function" in {
-    val input = "this-is-an-invalid-uuid-string"
+      val input = "88a01bf3-8368-4ac0-b487-8d465414a797"
+      input.asUuid(uuid => uuid.toString shouldBe input)(stringAsUuidHasFailed)
+    }
 
-    def stringAsUuidIsSuccessful(uuid: UUID): Assertion = assert(false)
-    def stringAsUuidHasFailed(): Assertion = assert(true)
+    "implicitly convert a [[String]] to a [[UUID]] with the given failure function" in {
+      val input = "this-is-an-invalid-uuid-string"
 
-    input.asUuid(stringAsUuidIsSuccessful)(stringAsUuidHasFailed)
+      def stringAsUuidIsSuccessful(uuid: UUID): Assertion = assert(false)
+      def stringAsUuidHasFailed(): Assertion = assert(true)
+
+      input.asUuid(stringAsUuidIsSuccessful)(stringAsUuidHasFailed)
+    }
   }
 }
