@@ -1,6 +1,7 @@
 package uk.co.telegraph.utils.implicits.types
 import java.util.UUID
-import scala.util.Try
+
+import scala.util.{Failure, Success, Try}
 
 trait StringUtils {
   /**
@@ -14,11 +15,11 @@ trait StringUtils {
       * @tparam T the resulting type
       * @return [[T]]
       */
-    def asUuid[T](success: UUID => T)(failure: => T): T = {
-      Try(UUID.fromString(str))
-        .toOption
-        .map(success)
-        .getOrElse(failure)
+    def asUuid[T](success: UUID => T)(failure: Throwable => T): T = {
+      Try(UUID.fromString(str)) match {
+        case Success(s) => success(s)
+        case Failure(t) => failure(t)
+      }
     }
   }
 }

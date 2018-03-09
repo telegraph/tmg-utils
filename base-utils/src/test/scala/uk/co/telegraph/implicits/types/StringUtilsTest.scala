@@ -13,7 +13,7 @@ class StringUtilsTest
 
     "implicitly convert a [[String]] to a [[UUID]] with the given success function" in {
 
-      def stringAsUuidHasFailed(): Assertion = assert(false)
+      def stringAsUuidHasFailed(t: Throwable): Assertion = assert(false)
 
       val input = "88a01bf3-8368-4ac0-b487-8d465414a797"
       input.asUuid(uuid => uuid.toString shouldBe input)(stringAsUuidHasFailed)
@@ -23,7 +23,7 @@ class StringUtilsTest
       val input = "this-is-an-invalid-uuid-string"
 
       def stringAsUuidIsSuccessful(uuid: UUID): Assertion = assert(false)
-      def stringAsUuidHasFailed(): Assertion = assert(true)
+      def stringAsUuidHasFailed(t: Throwable): Assertion = assert(true)
 
       input.asUuid(stringAsUuidIsSuccessful)(stringAsUuidHasFailed)
     }
