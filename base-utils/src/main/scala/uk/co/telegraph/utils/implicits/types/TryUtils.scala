@@ -1,10 +1,12 @@
 package uk.co.telegraph.utils.implicits.types
 
+import scala.util.Try
+
 trait TryUtils {
   /**
     * @param tri the [[scala.util.Try]] for operation
     */
-  implicit class RichTry[T](tri: util.Try[T]) {
+  implicit class RichTry[T](tri: Try[T]) {
 
     /**
       * @return an Either which will be a
@@ -12,11 +14,7 @@ trait TryUtils {
       *         [[Right]] if the [[scala.util.Try]] is a [[scala.util.Success]]
       */
     def toEither(): Either[Throwable, T] = {
-      if(tri.isFailure) {
-        Left(tri.failed.get)
-      } else {
-        Right(tri.get)
-      }
+      tri.map(Right(_)).recover { case t: Throwable => Left(t) }.get
     }
   }
 }

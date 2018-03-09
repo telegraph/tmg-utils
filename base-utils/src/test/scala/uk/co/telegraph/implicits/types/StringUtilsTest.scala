@@ -9,16 +9,20 @@ class StringUtilsTest
     with Matchers
     with StringUtils {
 
-  def stringAsUuidHasFailed(): Assertion = assert(false)
-  def stringAsUuidIsSuccessful(uuid: UUID): Assertion = assert(true)
-
   it should "implicitly convert a [[String]] to a [[UUID]] with the given success function" in {
+
+    def stringAsUuidHasFailed(): Assertion = assert(false)
+
     val input = "88a01bf3-8368-4ac0-b487-8d465414a797"
     input.asUuid(uuid => uuid.toString shouldBe input)(stringAsUuidHasFailed)
   }
 
   it should "implicitly convert a [[String]] to a [[UUID]] with the given failure function" in {
     val input = "this-is-an-invalid-uuid-string"
+
+    def stringAsUuidIsSuccessful(uuid: UUID): Assertion = assert(false)
+    def stringAsUuidHasFailed(): Assertion = assert(true)
+
     input.asUuid(stringAsUuidIsSuccessful)(stringAsUuidHasFailed)
   }
 }
