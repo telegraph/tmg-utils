@@ -156,7 +156,7 @@ class HttpClientImplTest extends TestKit(ActorSystemTest)
       val client = new HttpClientImpl("app.https")
 
       whenReady(client.single(RequestBuilding.Head("https://www.google.com"))){ res =>
-        res.status shouldBe Found
+        res.status shouldBe OK
       }
     }
 
