@@ -10,6 +10,7 @@ object Dependencies {
   val LogBackVersion  = "1.2.3"
   val JacksonVersion  = "2.7.8"
   val GuiceVersion    = "4.1.0"
+  val DropwizardMetricsVersion = "3.2.5"
 
   val Common: Seq[Setting[_]] = Seq(
     libraryDependencies ++= Seq(
@@ -85,7 +86,15 @@ object Dependencies {
       "com.typesafe.play"            %% "filters-helpers"           % PlayVersion,
       "com.typesafe.play"            %% "play"                      % PlayVersion,
       "com.typesafe.play"            %% "play-test"                 % PlayVersion % Test,
-      "org.scalatestplus.play"       %% "scalatestplus-play"        % "3.0.0"     % Test
+      "org.scalatestplus.play"       %% "scalatestplus-play"        % "3.0.0"     % Test,
+
+      // Metrics
+      "io.dropwizard.metrics"        % "metrics-core"                   % DropwizardMetricsVersion,
+      "io.dropwizard.metrics"        % "metrics-json"                   % DropwizardMetricsVersion,
+      "io.dropwizard.metrics"        % "metrics-graphite"               % DropwizardMetricsVersion,
+
+      // Tests
+      "org.scalatest"                %% "scalatest"                     % "3.0.3"         % Test
 
   ),
     dependencyOverrides ++= Set(
