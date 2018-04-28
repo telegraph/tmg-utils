@@ -9,7 +9,6 @@ import uk.co.telegraph.utils.client.models.ClientDetails
 import scala.concurrent.Future
 import scala.concurrent.Future.failed
 import scala.concurrent.duration.FiniteDuration
-import scala.util.{Success, Try}
 
 
 class SimpleHttpClient(httpClient: HttpClient)(implicit val _actorSystem: ActorSystem, implicit val _materializer: Materializer) {
@@ -28,13 +27,10 @@ class SimpleHttpClient(httpClient: HttpClient)(implicit val _actorSystem: ActorS
   }
 
   private def sendRequest(httpRequest: HttpRequest): Future[HttpResponse] = {
-
-    val response = Try {
+    try {
       httpClient.single(httpRequest)
-    }
-    response match {
-      case Success(response) => response
-      case util.Failure(exc) => Future.failed(new RejectedRequestException(httpRequest, exc))
+    } catch {
+      case e: Exception => throw new RejectedRequestException(httpRequest, e)
     }
   }
 
