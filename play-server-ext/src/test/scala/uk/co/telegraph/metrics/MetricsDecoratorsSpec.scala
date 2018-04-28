@@ -6,7 +6,7 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FreeSpec, Matchers}
 import play.api.mvc._
 import play.api.test.{FakeRequest, Helpers}
-import uk.co.telegraph.utils.server.TestActorSystemAndMaterializer
+import uk.co.telegraph.utils.TestActorSystemAndMaterializer
 import uk.co.telegraph.utils.server.metrics.MetricsDecorators
 
 import scala.concurrent.Future

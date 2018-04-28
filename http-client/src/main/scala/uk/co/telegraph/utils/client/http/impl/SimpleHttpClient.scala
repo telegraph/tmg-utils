@@ -1,7 +1,7 @@
 package uk.co.telegraph.utils.client.http.impl
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.HttpRequest
+import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.Materializer
 import uk.co.telegraph.utils.client.models.ClientDetails
@@ -9,6 +9,7 @@ import uk.co.telegraph.utils.client.models.ClientDetails
 import scala.concurrent.Future
 import scala.concurrent.Future.failed
 import scala.concurrent.duration.FiniteDuration
+import scala.util.{Success, Try}
 
 
 class SimpleHttpClient(httpClient: HttpClient)(implicit val _actorSystem: ActorSystem, implicit val _materializer: Materializer) {
@@ -26,12 +27,16 @@ class SimpleHttpClient(httpClient: HttpClient)(implicit val _actorSystem: ActorS
     }
   }
 
-  private def sendRequest(httpRequest: HttpRequest) =
-    try {
+  private def sendRequest(httpRequest: HttpRequest): Future[HttpResponse] = {
+
+    val response = Try {
       httpClient.single(httpRequest)
-    } catch {
-      case e: Exception => throw new RejectedRequestException(httpRequest, e)
     }
+    response match {
+      case Success(response) => response
+      case util.Failure(exc) => Future.failed(new RejectedRequestException(httpRequest, exc))
+    }
+  }
 
   def getDetails(implicit timeout: FiniteDuration): Future[ClientDetails] = httpClient.getDetails
 }
@@ -41,7 +46,7 @@ case class SimpleResponse(statusCode: Int, body: String)
 class UnsuccessfulResponseException(val request: HttpRequest, val statusCode: Int, val responseBody: String)
   extends RuntimeException(s"An error occurred requesting $request, returned code $statusCode and body [$responseBody]")
 
-class RejectedRequestException(val request: HttpRequest, exception: Exception)
+class RejectedRequestException(val request: HttpRequest, exception: Throwable)
   extends RuntimeException(s"The http client rejected request $request and failed immediately", exception)
 
 class SimpleHttpClientException(val request: HttpRequest, exception: Exception)

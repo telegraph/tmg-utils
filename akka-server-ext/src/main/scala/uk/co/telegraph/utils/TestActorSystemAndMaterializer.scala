@@ -1,11 +1,11 @@
-package uk.co.telegraph.utils.server
+package uk.co.telegraph.utils
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
-import org.scalatest.{BeforeAndAfterAll, OneInstancePerTest, Suite}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}
+import org.scalatest.{BeforeAndAfterAll, OneInstancePerTest, Suite}
 
 trait TestActorSystemAndMaterializer extends BeforeAndAfterAll with ScalaFutures with OneInstancePerTest{ this: Suite =>
 

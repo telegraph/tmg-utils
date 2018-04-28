@@ -38,7 +38,7 @@ lazy val playServerExt = (project in file("play-server-ext"))
     name := "play-server-ext",
     PlayServerExt
   )
-  .dependsOn(genericClient)
+  .dependsOn(genericClient, akkaServerExt)
 
 lazy val baseUtils = (project in file("base-utils"))
   .settings(

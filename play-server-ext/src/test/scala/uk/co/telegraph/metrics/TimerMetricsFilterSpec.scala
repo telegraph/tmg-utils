@@ -4,7 +4,7 @@ import com.codahale.metrics.{MetricRegistry, Timer}
 import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 import play.api.mvc._
 import play.api.test.FakeRequest
-import uk.co.telegraph.utils.server.TestActorSystemAndMaterializer
+import uk.co.telegraph.utils.TestActorSystemAndMaterializer
 import uk.co.telegraph.utils.server.metrics.{EndpointTimer, TimerMetricsFilter}
 
 import scala.concurrent.Future
