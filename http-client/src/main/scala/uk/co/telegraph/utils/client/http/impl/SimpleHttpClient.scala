@@ -1,7 +1,7 @@
 package uk.co.telegraph.utils.client.http.impl
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
+import akka.http.scaladsl.model.{ HttpRequest, HttpResponse }
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.Materializer
 import uk.co.telegraph.utils.client.models.ClientDetails
@@ -9,6 +9,7 @@ import uk.co.telegraph.utils.client.models.ClientDetails
 import scala.concurrent.Future
 import scala.concurrent.Future.failed
 import scala.concurrent.duration.FiniteDuration
+import scala.util.{ Failure, Success, Try }
 
 
 class SimpleHttpClient(httpClient: HttpClient)(implicit val _actorSystem: ActorSystem, implicit val _materializer: Materializer) {
@@ -27,10 +28,13 @@ class SimpleHttpClient(httpClient: HttpClient)(implicit val _actorSystem: ActorS
   }
 
   private def sendRequest(httpRequest: HttpRequest): Future[HttpResponse] = {
-    try {
+    Try {
       httpClient.single(httpRequest)
-    } catch {
-      case e: Exception => throw new RejectedRequestException(httpRequest, e)
+    } match {
+      case Success(response) => response
+      case Failure(exc) => throw new RejectedRequestException(httpRequest, exc)
+
+
     }
   }
 
