@@ -24,9 +24,9 @@ trait MetricsDecorators {
     res.map((result: Result) => {
       val statusCode = result.header.status
       statusCode match {
-        case x if (200 until 300) contains x => metricRegistry.counter(s"$counterName.success").inc()
-        case x if (300 until 500) contains x => metricRegistry.counter(s"$counterName.warning").inc()
-        case x if x >= 500                   => metricRegistry.counter(s"$counterName.error").inc()
+        case x if x >= 200 && x < 300 => metricRegistry.counter(s"$counterName.success").inc()
+        case x if x >= 300 && x < 500 => metricRegistry.counter(s"$counterName.warning").inc()
+        case x if x >= 500            => metricRegistry.counter(s"$counterName.error").inc()
       }
       result
     }).recoverWith {

@@ -8,8 +8,12 @@ import scala.concurrent.Future
 import scala.language.implicitConversions
 import scala.util.{ Failure, Success, Try }
 
+trait ActorSystemable {
+  val system : ActorSystem
+}
+
 trait FutureErrorLog {
-  this: {val system: ActorSystem} =>
+  this: ActorSystemable =>
 
   import system.dispatcher
 

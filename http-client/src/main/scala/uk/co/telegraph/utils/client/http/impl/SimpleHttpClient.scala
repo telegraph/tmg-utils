@@ -1,5 +1,7 @@
 package uk.co.telegraph.utils.client.http.impl
 
+import java.rmi.ServerException
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{ HttpRequest, HttpResponse }
 import akka.http.scaladsl.unmarshalling.Unmarshal
@@ -46,7 +48,7 @@ case class SimpleResponse(statusCode: Int, body: String) {
 }
 
 case class UnsuccessfulResponseException(val request: HttpRequest, val statusCode: Int, val responseBody: String)
-  extends RuntimeException(s"An error occurred requesting $request, returned code $statusCode and body [$responseBody]")
+  extends ServerException(s"An error occurred requesting $request, returned code $statusCode and body [$responseBody]")
 
 case class RejectedRequestException(val request: HttpRequest, exception: Throwable)
   extends RuntimeException(s"The http client rejected request $request and failed immediately", exception)
