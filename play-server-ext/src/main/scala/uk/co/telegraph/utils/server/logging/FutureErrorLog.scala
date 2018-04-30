@@ -6,26 +6,28 @@ import play.api.Logger
 
 import scala.concurrent.Future
 import scala.language.implicitConversions
+import scala.util.{ Failure, Success, Try }
 
 trait FutureErrorLog {
   this: {val system: ActorSystem} =>
 
   import system.dispatcher
 
-  class PotentialFailure[ANY](future: Future[ANY]) {
+  implicit class PotentialFailure[ANY](future: Future[ANY]) {
     def mapExceptionsTo[InException](exceptionMapper: InException => Throwable with WithLogLevel)(implicit exceptionManifest: Manifest[InException]): Future[ANY] = {
       future.recoverWith {
         case ex: InException =>
-          try {
+          Try {
             failWith(exceptionMapper(ex))
-          } catch {
-            case _: Throwable => Future.failed(ex)
+          } match {
+            case Failure(ex) => Future.failed(ex)
+            case Success(result) => result
           }
       }
     }
   }
 
-  implicit def toPotentialFailure[A](future: Future[A]): PotentialFailure[A] = {
+  def toPotentialFailure[A](future: Future[A]): PotentialFailure[A] = {
     new PotentialFailure[A](future)
   }
 
