@@ -29,6 +29,7 @@ class MetricsDecoratorsSpec extends FreeSpec with Matchers with TestActorSystemA
           .callDownstream(value)
           .map(Results.Ok(_))
           .recover {
+            case _: NullPointerException => Results.Accepted("")
             case _: IllegalArgumentException => Results.NotFound("")
             case _: RuntimeException => Results.InternalServerError("")
           }
@@ -56,6 +57,15 @@ class MetricsDecoratorsSpec extends FreeSpec with Matchers with TestActorSystemA
           metrics.counter("test.success").getCount shouldBe 1
         }
       }
+
+      "increases the success counter if the result is 202" in {
+        stubDownstream.callDownstream _ when "test" returns failed(new NullPointerException(""))
+
+        whenReady(testService.getProductBy("test")(fakeGetRequest)) { _ =>
+          metrics.counter("test.success").getCount shouldBe 1
+        }
+      }
+
 
       "increases the warning counter if the result is 404" in {
         stubDownstream.callDownstream _ when "test" returns failed(new IllegalArgumentException(""))
