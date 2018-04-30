@@ -71,11 +71,6 @@ object Dependencies {
       // Others
       "com.google.inject.extensions" %  "guice-multibindings"       % GuiceVersion,
 
-      // Json4s
-      "org.json4s"                   %% "json4s-jackson"            % Json4sVersion,
-      "org.json4s"                   %% "json4s-core"               % Json4sVersion,
-      "org.json4s"                   %% "json4s-ext"                % Json4sVersion,
-
       // Logging
       "ch.qos.logback"               %  "logback-core"              % LogBackVersion,
       "ch.qos.logback"               %  "logback-classic"           % LogBackVersion,
