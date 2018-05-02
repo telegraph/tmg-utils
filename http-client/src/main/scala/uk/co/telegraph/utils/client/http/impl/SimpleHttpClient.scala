@@ -45,7 +45,7 @@ class SimpleHttpClient(httpClient: HttpClient)(implicit val _actorSystem: ActorS
 
   def getDetails(implicit timeout: FiniteDuration): Future[ClientDetails] = httpClient.getDetails
 
-  def getClientFlow: Flow[HttpRequest, HttpContext, NotUsed] = httpClient.httpClientFlow
+  def getHttpClientFlow: Flow[HttpRequest, HttpContext, NotUsed] = httpClient.httpClientFlow
 }
 
 case class SimpleResponse(statusCode: Int, body: String) {
