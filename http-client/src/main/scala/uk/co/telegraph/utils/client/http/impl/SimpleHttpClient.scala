@@ -2,18 +2,21 @@ package uk.co.telegraph.utils.client.http.impl
 
 import java.rmi.ServerException
 
+import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.{ HttpRequest, HttpResponse }
+import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.Materializer
+import akka.stream.scaladsl.Flow
 import org.json4s.Formats
 import org.json4s.jackson.JsonMethods
+import uk.co.telegraph.utils.client.http.scaladsl.HttpContext
 import uk.co.telegraph.utils.client.models.ClientDetails
 
 import scala.concurrent.Future
 import scala.concurrent.Future.failed
 import scala.concurrent.duration.FiniteDuration
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 
 
 class SimpleHttpClient(httpClient: HttpClient)(implicit val _actorSystem: ActorSystem, implicit val _materializer: Materializer) {
@@ -41,6 +44,8 @@ class SimpleHttpClient(httpClient: HttpClient)(implicit val _actorSystem: ActorS
   }
 
   def getDetails(implicit timeout: FiniteDuration): Future[ClientDetails] = httpClient.getDetails
+
+  def getHttpClientFlow: Flow[HttpRequest, HttpContext, NotUsed] = httpClient.httpClientFlow
 }
 
 case class SimpleResponse(statusCode: Int, body: String) {
