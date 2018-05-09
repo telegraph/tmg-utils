@@ -8,7 +8,7 @@ import scala.language.postfixOps
 import GenericClient._
 
 trait GenericClient {
-  def getDetails(implicit timeout:FiniteDuration = DefaultTimeout):Future[ClientDetails]
+  def getDetails(implicit timeout: FiniteDuration = DefaultTimeout): Future[ClientDetails]
 }
 
 object GenericClient {
