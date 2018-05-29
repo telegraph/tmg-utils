@@ -14,8 +14,8 @@ object Common extends AutoPlugin {
     organization      := "uk.co.telegraph",
     organizationName  := "Telegraph Media Group",
 
-    version           := "1.0.0-" + buildNumber.getOrElse("SNAPSHOT"),
-    scalaVersion      := "2.11.8",
+    version           := "1.1.0-" + buildNumber.getOrElse("SNAPSHOT"),
+    scalaVersion      := "2.12.4",
     isSnapshot        := buildNumber.isEmpty,
     scalacOptions     ++= Seq(
       "-target:jvm-1.8",

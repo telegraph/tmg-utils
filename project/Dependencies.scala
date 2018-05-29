@@ -21,7 +21,7 @@ object Dependencies {
       "org.mockito"       %  "mockito-core"                % "2.7.9"         % Test,
       "org.scalamock"     %% "scalamock-scalatest-support" % "3.6.0"
     ),
-    dependencyOverrides ++= Set(
+    dependencyOverrides ++= Seq(
       "com.typesafe"      %  "config"                      % "1.3.1"
     )
   )
@@ -38,7 +38,7 @@ object Dependencies {
       "com.typesafe.akka"      %% "akka-stream-testkit" % AkkaVersion     % Test,
       "com.github.tomakehurst" %  "wiremock"            % "2.6.0"         % Test
     ),
-    dependencyOverrides ++= Set(
+    dependencyOverrides ++= Seq(
       "com.typesafe.akka" %% "akka-stream"         % AkkaVersion,
       "com.typesafe.akka" %% "akka-actor"          % AkkaVersion
     )
@@ -60,7 +60,7 @@ object Dependencies {
       "com.typesafe.akka" %% "akka-http-testkit"   % AkkaHttpVersion % Test,
       "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion     % Test
     ),
-    dependencyOverrides ++= Set(
+    dependencyOverrides ++= Seq(
       "com.typesafe.akka" %% "akka-stream"         % AkkaVersion,
       "com.typesafe.akka" %% "akka-actor"          % AkkaVersion
     )
@@ -92,7 +92,7 @@ object Dependencies {
       "org.scalatest"                %% "scalatest"                     % "3.0.3"         % Test
 
   ),
-    dependencyOverrides ++= Set(
+    dependencyOverrides ++= Seq(
       "com.typesafe.akka" %% "akka-actor"          % AkkaVersion,
       "com.typesafe.akka" %% "akka-http"           % AkkaHttpVersion
     )
