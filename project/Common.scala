@@ -11,13 +11,14 @@ object Common extends AutoPlugin {
   lazy val buildNumber = sys.env.get("BUILD_NUMBER").map( bn => s"b$bn")
 
   override lazy val projectSettings = Seq(
-    organization      := "uk.co.telegraph",
-    organizationName  := "Telegraph Media Group",
+    organization        := "uk.co.telegraph",
+    organizationName    := "Telegraph Media Group",
 
-    version           := "1.1.0-" + buildNumber.getOrElse("SNAPSHOT"),
-    scalaVersion      := "2.12.4",
-    isSnapshot        := buildNumber.isEmpty,
-    scalacOptions     ++= Seq(
+    version             := "1.1.0-" + buildNumber.getOrElse("SNAPSHOT"),
+    scalaVersion        := "2.12.4",
+    crossScalaVersions  := Seq("2.11.11", "2.12.4"),
+    isSnapshot          := buildNumber.isEmpty,
+    scalacOptions       ++= Seq(
       "-target:jvm-1.8",
       "-feature",
       "-encoding", "UTF-8",
