@@ -42,7 +42,7 @@ node("master"){
 
     stage("Publish"){
         sh """
-            ${sbtFolder}/sbt publish
+            ${sbtFolder}/sbt "+ publish"
         """
     }
 
