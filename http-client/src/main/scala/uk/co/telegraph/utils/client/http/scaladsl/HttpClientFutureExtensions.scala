@@ -23,7 +23,7 @@ private [scaladsl] case class HttpClientFutureExtensions(left:Future[HttpContext
     left.flatMap({
       case ctx if validStatus.contains(ctx.response.status) => left
       case ctx => left.ignorePayload
-        .flatMap{ _ => failed(HttpInvalidStatusException(ctx.request, ctx.response)) }
+        .flatMap{ _ => failed(HttpInvalidStatusException(ctx.request, ctx.response, statusCode = ctx.response.status)) }
     })
   }
 
