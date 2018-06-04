@@ -12,7 +12,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import com.typesafe.config.{Config, ConfigFactory}
-import org.json4s.DefaultFormats
+import org.json4s.{DefaultFormats, Formats}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{BeforeAndAfterAll, FreeSpecLike, Matchers}
@@ -29,7 +29,7 @@ class HttpClientImplTest extends TestKit(ActorSystemTest)
   with ScalaFutures
   with BeforeAndAfterAll
 {
-  implicit val defaultPatience =
+  implicit val defaultPatience: PatienceConfig =
     PatienceConfig(timeout = Span(10, Seconds), interval = Span(500, Millis))
 
   val wm = new WireMockServer(options().port(ServerPort))
@@ -53,7 +53,7 @@ class HttpClientImplTest extends TestKit(ActorSystemTest)
     ActorSystemTest.terminate()
   }
 
-  implicit val formats = DefaultFormats
+  implicit val formats: Formats = DefaultFormats
   import uk.co.telegraph.utils.client.http.serialization.Json4sSupport._
 
   "Given the 'HttpClient', " - {

@@ -10,6 +10,7 @@ object HttpInvalidStatusException{
   private [exceptions] def errorMsgFormatter(httpRequest: HttpRequest, httpResponse: HttpResponse, cause:Throwable = null) =
     s"Request [${httpRequest.method.name} ${httpRequest.uri}] failed with $httpResponse. Cause: '${Option(cause).map(_.getMessage).getOrElse("-")}'"
 
-  def apply(httpRequest: HttpRequest, httpResponse: HttpResponse, cause:Throwable = null, statusCode:StatusCode = InternalServerError):HttpClientException =
+  def toHttpStatusException(httpRequest: HttpRequest, httpResponse: HttpResponse, cause:Throwable = null, statusCode:StatusCode = InternalServerError):HttpClientException = {
     HttpInvalidStatusException(errorMsgFormatter(httpRequest, httpResponse, cause), cause, statusCode)
+  }
 }

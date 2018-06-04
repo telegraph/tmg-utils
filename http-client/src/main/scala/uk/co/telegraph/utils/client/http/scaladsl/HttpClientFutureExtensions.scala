@@ -4,7 +4,8 @@ import akka.http.scaladsl.model.StatusCode
 import akka.http.scaladsl.model.StatusCodes.OK
 import akka.http.scaladsl.unmarshalling.{FromEntityUnmarshaller, Unmarshal}
 import akka.stream.Materializer
-import uk.co.telegraph.utils.client.http.exceptions.{HttpInvalidStatusException, HttpRawDataException, HttpUnmarshallingException}
+import uk.co.telegraph.utils.client.http.exceptions.HttpInvalidStatusException.toHttpStatusException
+import uk.co.telegraph.utils.client.http.exceptions.{HttpRawDataException, HttpUnmarshallingException}
 import uk.co.telegraph.utils.client.http.scaladsl.HttpClientFutureExtensions._
 
 import scala.concurrent.Future.{failed, successful}
@@ -23,7 +24,7 @@ private [scaladsl] case class HttpClientFutureExtensions(left:Future[HttpContext
     left.flatMap({
       case ctx if validStatus.contains(ctx.response.status) => left
       case ctx => left.ignorePayload
-        .flatMap{ _ => failed(HttpInvalidStatusException(ctx.request, ctx.response, statusCode = ctx.response.status)) }
+        .flatMap{ _ => failed(toHttpStatusException(ctx.request, ctx.response, statusCode = ctx.response.status)) }
     })
   }
 
