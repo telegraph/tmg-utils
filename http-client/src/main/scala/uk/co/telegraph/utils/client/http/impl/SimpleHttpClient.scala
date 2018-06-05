@@ -52,11 +52,11 @@ case class SimpleResponse(statusCode: Int, body: String) {
   def bodyAs[A](implicit formats: Formats, mf: scala.reflect.Manifest[A]): A = JsonMethods.parse(body).extract[A]
 }
 
-case class UnsuccessfulResponseException(val request: HttpRequest, val statusCode: Int, val responseBody: String)
+case class UnsuccessfulResponseException(request: HttpRequest, statusCode: Int, responseBody: String)
   extends ServerException(s"An error occurred requesting $request, returned code $statusCode and body [$responseBody]")
 
-case class RejectedRequestException(val request: HttpRequest, exception: Throwable)
+case class RejectedRequestException(request: HttpRequest, exception: Throwable)
   extends RuntimeException(s"The http client rejected request $request and failed immediately", exception)
 
-case class SimpleHttpClientException(val request: HttpRequest, exception: Exception)
+case class SimpleHttpClientException(request: HttpRequest, exception: Exception)
   extends RuntimeException(s"An exception occurred while requesting $request", exception)
