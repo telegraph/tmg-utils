@@ -1,6 +1,6 @@
 package uk.co.telegraph.utils.implicits.types
-import java.util.UUID
 
+import java.util.UUID
 import scala.util.{Failure, Success, Try}
 
 trait StringUtils {
