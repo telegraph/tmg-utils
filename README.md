@@ -1,5 +1,7 @@
 
 # Tmg Utils
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6b23f7a1ebbc499896347a287b757eb5)](https://www.codacy.com/app/telegraph/tmg-utils?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=telegraph/tmg-utils&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/6b23f7a1ebbc499896347a287b757eb5)](https://www.codacy.com/app/telegraph/tmg-utils?utm_source=github.com&utm_medium=referral&utm_content=telegraph/tmg-utils&utm_campaign=Badge_Coverage)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Build Status](https://jenkins-prod.api-platforms.telegraph.co.uk/job/Pipeline/job/tmg-utils/badge/icon)](https://jenkins-prod.api-platforms.telegraph.co.uk/job/Pipeline/job/tmg-utils/)
 
