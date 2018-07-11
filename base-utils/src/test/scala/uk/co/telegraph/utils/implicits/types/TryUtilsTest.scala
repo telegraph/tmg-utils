@@ -1,7 +1,6 @@
 package uk.co.telegraph.utils.implicits.types
 
 import org.scalatest.{FreeSpec, Matchers}
-import uk.co.telegraph.utils.implicits.types.TryUtils
 import scala.util.{Failure, Success}
 
 class TryUtilsTest
