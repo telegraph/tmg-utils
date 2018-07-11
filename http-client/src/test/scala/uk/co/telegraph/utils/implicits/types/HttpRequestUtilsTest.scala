@@ -5,11 +5,13 @@ import akka.http.scaladsl.model.ContentTypes
 import akka.http.scaladsl.model.HttpRequest
 import org.scalatest.{FreeSpec, Matchers}
 
-class HttpRequestUtilsTest extends FreeSpec
+class HttpRequestUtilsTest
+  extends FreeSpec
   with HttpRequestUtils
   with Matchers {
 
   "Implicitly append optional [Seq[HttpHeader]]" - {
+
     "withOptHeaders - Some" - {
       val optHeaders = Some(Seq(headers.`Content-Type`(ContentTypes.`application/json`)))
 
@@ -18,6 +20,7 @@ class HttpRequestUtilsTest extends FreeSpec
 
       actual shouldBe expected
     }
+
     "withOptHeaders - None" - {
       val optHeaders = None
 
