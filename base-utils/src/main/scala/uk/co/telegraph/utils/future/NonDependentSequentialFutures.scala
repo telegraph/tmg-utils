@@ -1,11 +1,13 @@
 package uk.co.telegraph.utils.future
 
+import scala.annotation.tailrec
 import scala.concurrent.{ExecutionContext, Future}
 
 
 trait NonDependentSequentialFutures {
 
-  def nonDependentSequentialFutures[T](
+  @tailrec
+  final def nonDependentSequentialFutures[T](
     toProcess: Iterable[Future[T]],
     processed: Future[Iterable[Either[Throwable, T]]] = Future.successful(Nil)
   )(
